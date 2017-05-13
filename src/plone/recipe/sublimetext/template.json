@@ -1,0 +1,38 @@
+{
+    "ST3_DEFAULTS": {
+        "show_line_endings": true,
+        "sublimelinter": false,
+        "tab_size": 4,
+        "translate_tabs_to_spaces": true,
+        "trim_automatic_white_space": true,
+        "trim_trailing_white_space_on_save": true
+    },
+    "SUBLIMELINTER_DEFAULTS": {
+        "@python": 3,
+        "linters": {}
+    },
+    "SUBLIMELINTER_FLAKE8_DEFAULTS": {
+        "@disable": false,
+        "args": [],
+        "builtins": "",
+        "excludes": [],
+        "executable": "",
+        "ignore": "",
+        "jobs": "1",
+        "max-complexity": 15,
+        "max-line-length": 120,
+        "select": "",
+        "show-code": false
+    },
+    "SUBLIMELINTER_PYLINTER_DEFAULTS": {
+        "@disable": false,
+        "args": [],
+        "paths": [],
+        "show-codes": false
+    },
+    "JEDI_DEFAULTS": {
+        "python_interpreter": "$project_path/bin/python",
+        "python_package_paths": []
+    }
+
+}

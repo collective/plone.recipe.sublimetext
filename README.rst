@@ -1,0 +1,1 @@
+https://github.com/collective/collective.recipe.omelette/blob/master/collective/recipe/omelette/tests/test_docs.py

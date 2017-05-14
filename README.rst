@@ -32,6 +32,115 @@
 Introduction
 ============
 
+``plone.recipe.sublimetext`` is for `ST3`_ lover who wants python IDE like features while developing python `Buildout`_ based project. This tool will help you to create per project basis sublimetext settings with appropriate paths location assignment. Currently ``plone.recipe.sublimetext`` comes with supporting settings for `Jedi`_, `Sublimelinter`_, `Sublimelinter-Flake8`_, `Sublimelinter-Pylint`_.
+A general question may arise that why we will use this tool, weather we can create `ST3`_ project settings easily (we have better knowledge over `ST3`_ configuration)?
+Well i completely agree with you, but if you want to get benefited from `Jedi`_'s python autocompletion feature (basically I am lover of autocompletion), you have to add all eggs links for `Jedi`_'s paths settings and it is hard to manage eggs links manually if the size of project is big (think about any `Plone`_ powered project), beside `Sublimelinter-Pylint`_ also need list of paths to be added to sys.path  to find modules.
+
+Installation
+============
+
+Install ``plone.recipe.sublimetext`` is simple enough, just a section for ``sublimetext`` to your buildout. Before using ``plone.recipe.sublimetext`` make sure  `Jedi`_, `Sublimelinter`_, `Sublimelinter-Flake8`_ and/or `Sublimelinter-Pylint`_ plugins are already installed at your `ST3`_. You could follow full [`instruction here
+<https://nazrulworld.wordpress.com/2017/05/06/make-sublime-text-as-the-best-ide-for-full-stack-python-development>`_] if not your `ST3`_ setup yet.
+
+Example Buildout::
+    [buildout]
+    parts += sublimetext
+
+    [sublimetext]
+    recipe = plone.recipe.sublimetext
+    eggs = ${buildout:eggs}
+    jedi-enabled = True
+    sublimelinter-enabled = True
+    sublimelinter-pylint-enabled = True
+
+Available Options
+-----------------
+
+eggs
+    Required: Yes
+
+    Default: None
+
+    Your project's list of eggs, that going to be added in path location for `Jedi`_ and `Sublimelinter-Pylint`_.
+
+overwrite
+    Required: No
+
+    Default: False
+
+    This option indicates wheather existing settings should be cleaned first or just updating changes.
+    This situation may happen, you did create settings file manually with other configuration (those are not managed by ``plone.recipe.sublimetext``) and you want keep those settings.
+
+python-executable
+    Required: No
+
+    Default: ``plone.recipe.sublimetext`` will find current python executable path.
+
+    The python executable path for current project, if you are using virtual environment then should be that python path. FYI: ${home} and ${project} variable should work.
+
+project-name
+    Required: No
+
+    Default: if you have a existing `ST3`_ project file(settings file) in project/buildout root directory, ``plone.recipe.sublimetext`` will choose it as ``project-name``, other than project/buildout directory name will become as ``project-name``
+
+    The settings file name (no need to add suffix ``.sublime-project``)
+
+jedi-enabled
+    Required: No
+
+    Default: False
+
+    This option related to enable/disable Sublime `Jedi`_
+
+sublimelinter-enabled
+    Required: No
+
+    Default: False
+
+    Weather `Sublimelinter`_ you want to use this feature or not.
+
+sublimelinter-pylint-enabled
+    Required: No
+
+    Default: False
+
+    `Sublimelinter-Pylint`_ if you want to use or not; ``sublimelinter-enabled`` option will be respected, means if parent option is set as disabled but you enable this option will not work.
+
+sublimelinter-flake8-enabled
+    Required: No
+
+    Default: False
+
+    wheather you want to use `Sublimelinter-Flake8`_ or not. Like ``sublimelinter-pylint-enabled`` parent option will be respected.
+
+sublimelinter-flake8-executable
+    Required: No
+
+    Default: False
+
+    Project specific `Flake8`_ executable path, this will gives you lots flexibility over using global `Flake8`_ executable, because each project might have separate `Python`_ version.
+
+ignore-develop
+    Required: No
+
+    Default: False
+
+    If you don't want development eggs, should go for autocompletion.
+
+ignores
+    Required: No
+
+    Default: ""
+
+    If you want specific eggs should not go for autocompletion.
+
+packages
+    Required: No
+
+    Default: ""
+
+    Location of some python scripts or non standard modules (don't have setup file), you want to be in system path.
+
 Links
 =====
 
@@ -46,3 +155,13 @@ Continuous Integration:
 Issue Tracker:
 
     https://github.com/nazrulworld/plone.recipe.sublimetext/issues
+
+.. _`ST3`: https://www.sublimetext.com/3
+.. _`Buildout`: http://www.buildout.org/en/latest/
+.. _`Jedi`: https://github.com/srusskih/SublimeJEDI
+.. _`Sublimelinter`: http://sublimelinter.readthedocs.io/en/latest/
+.. _`Sublimelinter-Flake8`: https://github.com/SublimeLinter/SublimeLinter-flake8
+.. _`Sublimelinter-Pylint`: https://github.com/SublimeLinter/SublimeLinter-pylint
+.. _`Plone`: https://plone.org/
+.. _`Flake8`: https://pypi.python.org/pypi/flake8
+.. _`Python`: https://www.python.org/

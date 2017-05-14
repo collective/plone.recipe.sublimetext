@@ -2,11 +2,18 @@
 from setuptools import find_packages
 from setuptools import setup
 
+import os
+
+
+def read(*rnames):
+    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+
 
 long_description = '\n\n'.join([
-    open('README.rst').read(),
-    open('CONTRIBUTORS.rst').read(),
-    open('CHANGES.rst').read(),
+    read('README.rst'),
+    # read('src', 'plone', 'recipe', 'sublimetext', 'README.rst'),
+    read('CONTRIBUTORS.rst'),
+    read('CHANGES.rst'),
 ])
 
 install_requires = ['setuptools', 'zc.buildout', 'zc.recipe.egg']

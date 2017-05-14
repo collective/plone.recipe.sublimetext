@@ -2,3 +2,4 @@ graft src/plone
 graft docs
 include *.rst
 global-exclude *.pyc
+exclude bootstrap-buildout.py .coveragerc buildout.cfg travis.cfg

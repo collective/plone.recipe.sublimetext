@@ -9,6 +9,7 @@ Install sublimetext recipe with autocomplete path for eggs, some packages::
     ...     %(test_dir)s/develop/sublimtexttest_pkg1
     ... eggs =
     ...     sublimtexttest_pkg1
+    ...     zc.recipe.egg
     ... parts = sublimetext
     ...
     ... [sublimetext]

@@ -11,7 +11,7 @@ def read(*rnames):
 
 long_description = '\n\n'.join([
     read('README.rst'),
-    # read('src', 'plone', 'recipe', 'sublimetext', 'README.rst'),
+    read('src', 'plone', 'recipe', 'sublimetext', 'README.rst'),
     read('CONTRIBUTORS.rst'),
     read('CHANGES.rst'),
 ])

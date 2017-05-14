@@ -16,7 +16,6 @@
         "args": [],
         "builtins": "",
         "excludes": [],
-        "executable": "",
         "ignore": "",
         "jobs": "1",
         "max-complexity": 15,

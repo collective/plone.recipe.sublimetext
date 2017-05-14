@@ -3,23 +3,20 @@
 
 from setuptools import setup
 
+
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
-requirements = [
-    # TODO: put package requirements here
-]
+requirements = []
 
-test_requirements = [
-    # TODO: put package test requirements here
-]
+test_requirements = []
 
 setup(
     name='sublimtexttest_pkg1',
     version='0.1.0',
-    description="Python Boilerplate contains all the boilerplate you need to create a Python package.",
+    description='Python Boilerplate contains all the boilerplate you need to create a Python package.',
     long_description=readme,
-    author="Md Nazrul Islam",
+    author='Md Nazrul Islam',
     author_email='email2nazrul@gmail.com',
     url='https://github.com/nazrulworld/sublimtexttest_pkg1',
     packages=[
@@ -29,7 +26,7 @@ setup(
                  'sublimtexttest_pkg1'},
     include_package_data=True,
     install_requires=requirements,
-    license="MIT license",
+    license='MIT license',
     zip_safe=False,
     keywords='sublimtexttest_pkg1',
     classifiers=[
@@ -37,7 +34,7 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
+        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',

@@ -4,16 +4,16 @@ Doctest runner for 'collective.recipe.omelette'.
 """
 __docformat__ = 'restructuredtext'
 
-from zc.buildout.rmtree import rmtree
+from zc.buildout.testing import read  # noqa: F401
+from zope.testing import renormalizing
 
+import doctest
 import os
 import re
-import unittest
 import sys
-import zc.buildout.tests
+import unittest
 import zc.buildout.testing
-import doctest
-from zope.testing import renormalizing
+import zc.buildout.tests
 
 
 optionflags = (
@@ -30,20 +30,12 @@ def setUp(test):
     zc.buildout.testing.buildoutSetUp(test)
 
     # Install the recipe (and dependencies) in develop mode
-    # zc.buildout.testing.install_develop('zc.recipe.egg', test)
     zc.buildout.testing.install_develop('plone.recipe.sublimetext', test)
 
 
 def tearDown(test):
-    # safely remove junctions (on Windows) before the test teardown clobbers them with a shutil.rmtree
-    # rmtree(os.getcwd(), False)
 
     zc.buildout.testing.buildoutTearDown(test)
-
-    # get rid of the extra product directory that may have been created
-    # product_dir = os.path.join(test_dir, 'Products', 'Product3')
-    # if os.path.exists(product_dir):
-    #     rmtree(product_dir)
 
 
 def run(command, input=''):
@@ -74,6 +66,7 @@ def test_suite():
                 ),
             ))
     return suite
+
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')

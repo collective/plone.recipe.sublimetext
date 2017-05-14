@@ -1,11 +1,17 @@
 # _*_ coding: utf-8 _*_
 """ """
+from zc.buildout import UserError
+
 import json
 import logging
 import os
+import re
 import sys
 import zc.recipe.egg
-from zc.buildout import UserError
+
+
+json_comment = re.compile(r'/\*.*?\*/', re.DOTALL | re.MULTILINE)
+
 
 class Recipe:
 
@@ -64,16 +70,8 @@ class Recipe:
             options['location'],
             options['project-name'] + '.sublime-project'
         )
-        if not options['overwrite'] and os.path.exists(project_file):
 
-            with open(project_file, 'r') as f:
-                existing_st3_settings = json.load(f, encoding='utf-8')
-                existing_st3_settings.update(st3_settings)
-
-                st3_settings = existing_st3_settings.copy()
-
-        with open(project_file, 'w') as f:
-            json.dump(st3_settings, f, encoding='utf-8', indent=4)
+        self._write_project_file(project_file, st3_settings, options['overwrite'])
 
         return project_file
 
@@ -120,6 +118,7 @@ class Recipe:
         self.options.setdefault('sublimelinter-enabled', 'False')
         self.options.setdefault('sublimelinter-pylint-enabled', 'False')
         self.options.setdefault('sublimelinter-flake8-enabled', 'False')
+        self.options.setdefault('sublimelinter-flake8-executable', '')
         self.options.setdefault('python-executable', str(sys.executable))
 
         self.options.setdefault('ignore-develop', 'False')
@@ -154,7 +153,13 @@ class Recipe:
 
             # Now check for flake8
             if options['sublimelinter-flake8-enabled']:
-                settings['SublimeLinter']['linters']['flake8'] = default_settings['SUBLIMELINTER_FLAKE8_DEFAULTS']
+
+                settings['SublimeLinter']['linters']['flake8'] =\
+                    default_settings['SUBLIMELINTER_FLAKE8_DEFAULTS']
+
+                if options['sublimelinter-flake8-executable']:
+                    settings['SublimeLinter']['linters']['flake8']['executable'] =\
+                        options['sublimelinter-flake8-executable']
 
             # Now check for pylint
             if options['sublimelinter-pylint-enabled']:
@@ -168,6 +173,33 @@ class Recipe:
 
         return settings
 
+    def _write_project_file(self, project_file, settings, overwrite=False):
+        """ """
+        try:
+            if not overwrite and os.path.exists(project_file):
+
+                with open(project_file, 'r') as f:
+                    # get comment cleaned (/* */) json string
+                    json_string = json_comment.sub('', f.read().strip())
+                    existing_st3_settings = json.loads(json_string, encoding='utf-8')
+                    existing_st3_settings.update(settings)
+
+                    settings = existing_st3_settings.copy()
+
+            with open(project_file, 'w') as f:
+                json.dump(settings, f, encoding='utf-8', indent=4)
+
+        except ValueError as exc:
+            # catching any json error
+            raise UserError(str(exc))
+
 
 def uninstall(name, options):
-    return 1
+    """ """
+    logger = logging.getLogger(name)
+    logger.info('uninstalling ...')
+
+    if options.get('overwrite', 'False').lower() in ('yes', 'true', 'on', '1', 'sure'):
+        project_file = os.path.join(options['location'], options['project-name'] + '.sublime-project')
+        logger.info('removed generated file /{0}'.format(project_file.split('/')[-1]))
+        os.unlink(project_file)

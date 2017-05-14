@@ -31,7 +31,7 @@ class TestRecipe(unittest.TestCase):
         self.recipe_options = dict(
             recipe='plone.recipe.sublimetext',
             overwrite='False',
-            eggs='zc.recipe.egg'
+            eggs='zc.recipe.egg\nzc.buildout'
         )
         self.recipe_options['project-name'] = 'sublimetext-recipe'
 
@@ -53,8 +53,8 @@ class TestRecipe(unittest.TestCase):
         generated_settings = json.loads(
             read(os.path.join(self.location, recipe_options['project-name'] + '.sublime-project'))
         )
-        print generated_settings['settings']['python_package_paths']
-        self.assertEqual(2, len(generated_settings['settings']['python_package_paths']))
+        # should be three, zc.buildout, zc,recipe.egg, python site-package path
+        self.assertEqual(3, len(generated_settings['settings']['python_package_paths']))
 
         # Failed Test: existing project file with invalid json
         write(

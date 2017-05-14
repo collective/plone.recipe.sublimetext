@@ -10,7 +10,19 @@ import sys
 import zc.recipe.egg
 
 
+PY2 = sys.version_info[0] == 2
+
 json_comment = re.compile(r'/\*.*?\*/', re.DOTALL | re.MULTILINE)
+json_dump_params = {
+    'sort_keys': True,
+    'indent': 4,
+    'separators': (',', ':')
+}
+json_load_params = {}
+
+if PY2:
+    json_dump_params['encoding'] = 'utf-8'
+    json_load_params['encoding'] = 'utf-8'
 
 
 class Recipe:
@@ -131,7 +143,7 @@ class Recipe:
         settings = dict(settings={})
 
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'template.json'), 'r') as f:
-            default_settings = json.load(f, encoding='utf-8')
+            default_settings = json.load(f, **json_load_params)
 
         settings['settings'] = default_settings['ST3_DEFAULTS']
 
@@ -181,13 +193,13 @@ class Recipe:
                 with open(project_file, 'r') as f:
                     # get comment cleaned (/* */) json string
                     json_string = json_comment.sub('', f.read().strip())
-                    existing_st3_settings = json.loads(json_string, encoding='utf-8')
+                    existing_st3_settings = json.loads(json_string, **json_load_params)
                     existing_st3_settings.update(settings)
 
                     settings = existing_st3_settings.copy()
 
             with open(project_file, 'w') as f:
-                json.dump(settings, f, encoding='utf-8', indent=4)
+                json.dump(settings, f, **json_dump_params)
 
         except ValueError as exc:
             # catching any json error

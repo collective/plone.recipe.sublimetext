@@ -117,7 +117,7 @@ class TestRecipe(unittest.TestCase):
         ]
 
         with open(JSON_TEMPLATE, 'r') as f:
-            default_settings = json.load(f, encoding='utf-8')
+            default_settings = json.load(f)
 
         st3_settings = recipe._prepare_settings(test_eggs_locations)
         # All are default options so should be ST3_DEFAULTS settings only

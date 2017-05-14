@@ -14,9 +14,11 @@ env:
 matrix:
   allow_failures:
     - python: 3.4
+    - python: 3.5
 
 install:
-  - python bootstrap-buildout.py --setuptools-version=35.0.2 --buildout-version=2.9.3
+  - pip install -U pip
+  - python bootstrap-buildout.py
   - bin/buildout -c $CONF annotate
   - bin/buildout -N -t 3 -c $CONF
 script:

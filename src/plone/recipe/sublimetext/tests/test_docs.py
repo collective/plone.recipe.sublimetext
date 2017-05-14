@@ -30,11 +30,8 @@ def setUp(test):
     zc.buildout.testing.buildoutSetUp(test)
 
     # Install the recipe (and dependencies) in develop mode
+    zc.buildout.testing.install_develop('zc.recipe.egg', test)
     zc.buildout.testing.install_develop('plone.recipe.sublimetext', test)
-
-    # Install any other recipes that should be available in the tests
-    zc.buildout.testing.install('zc.recipe.egg', test)
-    zc.buildout.testing.install('check-manifest', test)
 
 
 def tearDown(test):

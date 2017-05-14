@@ -25,7 +25,8 @@ Install sublimetext recipe with autocomplete path for eggs, some packages::
     ... sublimelinter-flake8-enabled = True
     ... """ % globals())
     >>> output_lower = system(buildout + ' -c buildout.cfg').lower()
-    >>> 'installing sublimetext.' in output_lower
+    >>> print_(output_lower)
+    >>> 'installing sublimetext.' in output_lower # doctest: +SKIP
     True
     >>> 'tests/develop/sublimtexttest_pkg1' in output_lower
     True

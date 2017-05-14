@@ -53,6 +53,7 @@ class TestRecipe(unittest.TestCase):
         generated_settings = json.loads(
             read(os.path.join(self.location, recipe_options['project-name'] + '.sublime-project'))
         )
+        print generated_settings['settings']['python_package_paths']
         self.assertEqual(2, len(generated_settings['settings']['python_package_paths']))
 
         # Failed Test: existing project file with invalid json

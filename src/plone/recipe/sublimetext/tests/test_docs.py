@@ -10,7 +10,6 @@ from zope.testing import renormalizing
 import doctest
 import os
 import re
-import sys
 import unittest
 import zc.buildout.testing
 import zc.buildout.tests
@@ -39,10 +38,6 @@ def tearDown(test):
     zc.buildout.testing.buildoutTearDown(test)
 
 
-def run(command, input=''):
-    sys.stdout.write(zc.buildout.testing.system(command, input))
-
-
 def test_suite():
     suite = unittest.TestSuite((
             doctest.DocFileSuite(
@@ -67,7 +62,3 @@ def test_suite():
                 ),
             ))
     return suite
-
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')

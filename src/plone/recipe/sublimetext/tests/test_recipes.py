@@ -2,6 +2,7 @@
 from zc.buildout import rmtree
 from zc.buildout import UserError
 from zc.buildout.testing import Buildout
+from zc.buildout.testing import mkdir
 from zc.buildout.testing import read
 from zc.buildout.testing import write
 
@@ -22,6 +23,7 @@ class TestRecipe(unittest.TestCase):
         self.here = os.getcwd()
 
         self.location = tempfile.mkdtemp(prefix='plone.recipe.sublimetext')
+        mkdir(self.location, 'develop-eggs')
         os.chdir(self.location)
 
         self.buildout = Buildout()
@@ -56,6 +58,24 @@ class TestRecipe(unittest.TestCase):
         # should be three, zc.buildout, zc,recipe.egg, python site-package path
         self.assertEqual(3, len(generated_settings['settings']['python_package_paths']))
 
+        # Test ignores
+        buildout['buildout'].update({
+            'develop': '.'
+        })
+        buildout['sublimetext'].update({
+            'ignores': 'zc.buildout',
+            'ignore-develop': 'True'
+        })
+        recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
+        recipe.install()
+
+        generated_settings = json.loads(
+            read(os.path.join(self.location, recipe_options['project-name'] + '.sublime-project'))
+        )
+
+        # should be two, zc.buildout is ignored
+        self.assertEqual(2, len(generated_settings['settings']['python_package_paths']))
+
         # Failed Test: existing project file with invalid json
         write(
             self.location,
@@ -68,6 +88,17 @@ class TestRecipe(unittest.TestCase):
                 'Code should not come here, as invalid json inside existing project'
                 'file! ValueError raised by UserError'
             )
+        except UserError:
+            pass
+
+        # Failed Test: exception rasied by zc.recipe.Egg
+        recipe.options.update({
+            # Invalid Egg
+            'eggs': '\\'
+        })
+        try:
+            recipe.install()
+            raise AssertionError('Code should not come here, as should raised execption because of invalied eggs')
         except UserError:
             pass
 

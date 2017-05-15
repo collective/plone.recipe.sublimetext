@@ -10,6 +10,7 @@ Install sublimetext recipe with autocomplete path for eggs, some packages::
     ... eggs =
     ...     sublimtexttest_pkg1
     ...     zc.recipe.egg
+    ...     zc.buildout
     ... parts = sublimetext
     ...
     ... [sublimetext]
@@ -37,8 +38,15 @@ Install sublimetext recipe with autocomplete path for eggs, some packages::
     d  eggs
     d  parts
     -  plone-recipe-sublime.sublime-project
-    >>> cat(sample_buildout, 'plone-recipe-sublime.sublime-project') # doctest: +SKIP
     <BLANKLINE>
+    >>> import json
+    >>> ST3_settings = json.loads(read(sample_buildout, 'plone-recipe-sublime.sublime-project'))
+    >>> len(ST3_settings['settings']['python_package_paths']) == 5
+    True
+    >>> 'SublimeLinter' in ST3_settings.keys()
+    True
+    >>> ST3_settings['SublimeLinter']['linters']['pylint']['@disable']
+    False
 
 SublimeText congiguration with all default options::
     >>> write(sample_buildout, 'buildout.cfg',
@@ -56,6 +64,44 @@ SublimeText congiguration with all default options::
     ... eggs = ${buildout:eggs}
     ... """ % globals())
     >>> output = system(buildout + ' -c buildout.cfg').lower()
-    >>> file_contents = read(sample_buildout, 'plone-recipe-sublime.sublime-project')
+    >>> ST3_settings = json.loads(read(sample_buildout, 'plone-recipe-sublime.sublime-project'))
+    >>> 'SublimeLinter' not in ST3_settings.keys()
+    True
+    >>> ST3_settings['settings']['sublimelinter']
+    False
+    >>> 'python_package_paths' not in ST3_settings['settings'].keys()
+    True
+
+SublimeText congiguration test with custom location, custom flake8 exacutable::
+
+    >>> import tempfile
+    >>> custom_location = tempfile.mkdtemp(prefix='plone.rst')
+    >>> GLOBAL = {'custom_location': custom_location}
+    >>> GLOBAL.update(globals())
+    >>> write(sample_buildout, 'buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop =
+    ...     %(test_dir)s/develop/sublimtexttest_pkg1
+    ... eggs =
+    ...     sublimtexttest_pkg1
+    ...     zc.recipe.egg
+    ... parts = sublimetext
+    ...
+    ... [sublimetext]
+    ... recipe = plone.recipe.sublimetext
+    ... eggs = ${buildout:eggs}
+    ... project-name = plone-recipe-sublime
+    ... location = %(custom_location)s
+    ... sublimelinter-enabled = True
+    ... sublimelinter-flake8-enabled = True
+    ... sublimelinter-flake8-executable = /fake/path/flake8
+    ... """ % GLOBAL)
+    >>> output = system(buildout + ' -c buildout.cfg').lower()
+    >>> ST3_settings = json.loads(read(custom_location, 'plone-recipe-sublime.sublime-project'))
+    >>> ST3_settings['SublimeLinter']['linters']['flake8']['executable'] == '/fake/path/flake8'
+    True
+    >>> import shutil
+    >>> shutil.rmtree(custom_location)
 
 

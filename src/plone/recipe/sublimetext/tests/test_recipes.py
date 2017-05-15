@@ -58,13 +58,43 @@ class TestRecipe(unittest.TestCase):
         # should be three, zc.buildout, zc,recipe.egg, python site-package path
         self.assertEqual(3, len(generated_settings['settings']['python_package_paths']))
 
+        # Test with custom location with package
+        buildout['sublimetext'].update({
+            'packages': '/fake/path',
+            'location': tempfile.mkdtemp(),
+        })
+
+        recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
+        recipe.install()
+
+        generated_settings = json.loads(
+            read(os.path.join(
+                buildout['sublimetext']['location'],
+                recipe_options['project-name'] + '.sublime-project'
+            ))
+        )
+
+        # Now should four links
+        self.assertEqual(4, len(generated_settings['settings']['python_package_paths']))
+
+        # Make sure settings file is created at custom location
+        self.assertTrue(os.path.exists(os.path.join(
+            buildout['sublimetext']['location'],
+            buildout['sublimetext']['project-name'] + '.sublime-project'
+        )))
+
+        # restore
+        rmtree.rmtree(buildout['sublimetext']['location'])
+        del buildout['sublimetext']['location']
+        del buildout['sublimetext']['packages']
+
         # Test ignores
         buildout['buildout'].update({
             'develop': '.'
         })
         buildout['sublimetext'].update({
             'ignores': 'zc.buildout',
-            'ignore-develop': 'True'
+            'ignore-develop': 'True',
         })
         recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
         recipe.install()
@@ -161,6 +191,7 @@ class TestRecipe(unittest.TestCase):
         recipe_options['sublimelinter-enabled'] = 'True'
         recipe_options['sublimelinter-pylint-enabled'] = 'True'
         recipe_options['sublimelinter-flake8-enabled'] = 'True'
+        recipe_options['sublimelinter-flake8-executable'] = '/fake/path/flake8'
 
         buildout['sublimetext'].update(recipe_options)
 
@@ -171,6 +202,14 @@ class TestRecipe(unittest.TestCase):
         self.assertIn('SublimeLinter', st3_settings)
         self.assertEqual(test_eggs_locations, st3_settings['settings']['python_package_paths'])
         self.assertFalse(st3_settings['SublimeLinter']['linters']['pylint']['@disable'])
+
+        # Test Parent `sublimelinter-enabled` is respected
+        # We all children options of sublimelinter are enabled.
+        del buildout['sublimetext']['sublimelinter-enabled']
+
+        recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
+        st3_settings = recipe._prepare_settings(test_eggs_locations)
+        self.assertNotIn('SublimeLinter', st3_settings)
 
     def test__write_project_file(self):
         """ """

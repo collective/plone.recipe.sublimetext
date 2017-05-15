@@ -74,8 +74,9 @@ SublimeText congiguration with all default options::
 
 SublimeText congiguration test with custom location, custom flake8 exacutable::
 
+    >>> import os
     >>> import tempfile
-    >>> custom_location = tempfile.mkdtemp(prefix='plone.rst')
+    >>> custom_location = os.path.join(tempfile.gettempdir(), 'hshdsrthgdrts')
     >>> GLOBAL = {'custom_location': custom_location}
     >>> GLOBAL.update(globals())
     >>> write(sample_buildout, 'buildout.cfg',

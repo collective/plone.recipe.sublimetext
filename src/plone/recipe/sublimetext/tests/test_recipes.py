@@ -61,7 +61,7 @@ class TestRecipe(unittest.TestCase):
         # Test with custom location with package
         buildout['sublimetext'].update({
             'packages': '/fake/path',
-            'location': tempfile.mkdtemp(),
+            'location': os.path.join(tempfile.gettempdir(), 'hshdshgdrts')
         })
 
         recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])

@@ -79,18 +79,18 @@ Test merged works, existing settings kept intact::
 
     >>> import os
     >>> import tempfile
-    >>> custom_location = os.path.join(tempfile.gettempdir(), 'hshdsrthgdrts')
+    >>> custom_location = tempfile.mkdtemp('prs')
     >>> GLOBAL = {'custom_location': custom_location}
     >>> GLOBAL.update(globals())
-    >>> write(custom_location, 'plone.recipe.sublimetext.sublime-project',
+    >>> write(custom_location, 'plone-recipe-sublime.sublime-project',
     ... """
     ... {
-    ...     "folders": [{"path": "$(custom_location)s"}],
+    ...     "folders": [{"path": "%(custom_location)s"}],
     ...     "SublimeLinter": {
     ...         "linters": {
     ...             "flake8": {"@disable": true, "max-complexity": 10}
     ...         }
-    ..      }
+    ...      }
     ... }
     ... """ % {'custom_location': custom_location})
     >>> write(sample_buildout, 'buildout.cfg',
@@ -120,7 +120,7 @@ Test merged works, existing settings kept intact::
     False
     >>> ST3_settings['SublimeLinter']['linters']['flake8']['max-complexity']
     10
-    >> ST3_settings['folders'][0]['path'] == custom_location
+    >>> ST3_settings['folders'][0]['path'] == custom_location
     True
     >>> import shutil
     >>> shutil.rmtree(custom_location)

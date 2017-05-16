@@ -20,6 +20,12 @@ json_dump_params = {
 }
 json_load_params = {}
 
+default_st3_folders_settings = [
+        {
+            'path': '.'
+        }
+    ]
+
 if PY2:
     json_dump_params['encoding'] = 'utf-8'
     json_load_params['encoding'] = 'utf-8'
@@ -194,9 +200,13 @@ class Recipe:
                     # get comment cleaned (/* */) json string
                     json_string = json_comment.sub('', f.read().strip())
                     existing_st3_settings = json.loads(json_string, **json_load_params)
-                    existing_st3_settings.update(settings)
 
-                    settings = existing_st3_settings.copy()
+                    if existing_st3_settings:
+                        self._merge_settings(settings, existing_st3_settings)
+                        settings = existing_st3_settings.copy()
+
+            if 'folders' not in settings:
+                settings['folders'] = default_st3_folders_settings
 
             with open(project_file, 'w') as f:
                 json.dump(settings, f, **json_dump_params)
@@ -204,6 +214,23 @@ class Recipe:
         except ValueError as exc:
             # catching any json error
             raise UserError(str(exc))
+
+    def _merge_settings(self, new_settings, existing_settings):
+        """ """
+
+        for key, value in new_settings.items():
+
+            try:
+                item = existing_settings[key]
+                if isinstance(value, dict) and (type(item) == type(value)):
+                    self._merge_settings(value, item)
+                    existing_settings[key] = item
+                else:
+                    existing_settings[key] = value
+
+            except KeyError:
+                # New Item
+                existing_settings[key] = value
 
 
 def uninstall(name, options):

@@ -10,10 +10,6 @@
     :target: https://coveralls.io/r/nazrulworld/plone.recipe.sublimetext
     :alt: Test Coverage
 
-.. image:: https://img.shields.io/pypi/dm/plone.recipe.sublimetext.svg
-    :target: https://pypi.python.org/pypi/plone.recipe.sublimetext/
-    :alt: Downloads
-
 .. image:: https://img.shields.io/pypi/pyversions/plone.recipe.sublimetext.svg
     :target: https://pypi.python.org/pypi/plone.recipe.sublimetext/
     :alt: Python Versions

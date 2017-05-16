@@ -34,7 +34,7 @@ setup(
     # Get more from https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         'Environment :: Web Environment',
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Framework :: Plone',
         'Framework :: Plone :: 4.3',
         'Framework :: Plone :: 5.0',

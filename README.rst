@@ -152,6 +152,17 @@ Issue Tracker:
 
     https://github.com/nazrulworld/plone.recipe.sublimetext/issues
 
+
+Known Issues
+============
+
+- `Sublimelinter-Flake8`_ might stop working if `flake8-plone-api <https://pypi.python.org/pypi/flake8-plone-api>`_ is installed as until 1.2 version, `flake8-plone-api` don't support SublimeText (linting), see pull request `here <https://github.com/gforcada/flake8-plone-api/pull/18>`_ . That means upcoming version will support hopefully. It could happen, either you are using global or virtualenv flake8. You can see error in `ST3`_ console::
+
+    flake8_plone_api-1.2-py2.7.egg/flake8_plone_api.py", line 16, in run
+    with open(self.filename) as f:
+    IOError: [Errno 2] No such file or directory: 'stdin'
+
+
 .. _`ST3`: https://www.sublimetext.com/3
 .. _`Buildout`: http://www.buildout.org/en/latest/
 .. _`Jedi`: https://github.com/srusskih/SublimeJEDI

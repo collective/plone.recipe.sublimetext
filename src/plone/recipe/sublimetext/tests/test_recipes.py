@@ -214,10 +214,15 @@ class TestRecipe(unittest.TestCase):
     def test__write_project_file(self):
         """ """
         from ..recipes import Recipe
+        from ..recipes import default_st3_folders_settings
 
         buildout = self.buildout
         recipe_options = self.recipe_options.copy()
         del recipe_options['overwrite']
+        recipe_options.update({
+            'sublimelinter-enabled': 'True',
+            'sublimelinter-flake8-enabled': 'True'
+        })
 
         _project_file = 'human_project.sublime-project'
 
@@ -229,6 +234,14 @@ class TestRecipe(unittest.TestCase):
                 */
                 "tests": {
                     "hello": 1
+                },
+                "SublimeLinter": {
+                    "linters": {
+                        "flake8": {
+                            "@disable": true,
+                            "max-complexity": 10
+                        }
+                    }
                 }
 
             }"""
@@ -255,8 +268,22 @@ class TestRecipe(unittest.TestCase):
         generated_settings = json.loads(read(os.path.join(self.location, _project_file)))
         default_settings = json.loads(read(JSON_TEMPLATE))
 
-        self.assertEqual(generated_settings['settings'], default_settings['ST3_DEFAULTS'])
-        # Test: existing configuration
+        # Test:: merged works with new and existing
+
+        # Make sure value changed from buildout
+        self.assertFalse(generated_settings['SublimeLinter']['linters']['flake8']['@disable'])
+        # Make sure other value kept intact, because that option is not handled by this recipe
+        self.assertEqual(
+            generated_settings['SublimeLinter']['linters']['flake8']['max-complexity'],
+            10
+        )
+        # Test:: default folders option is added, because existing file don't have this
+        self.assertEqual(
+            generated_settings['folders'],
+            default_st3_folders_settings
+        )
+
+        # Test: existing configuration is kept intact
         self.assertEqual(generated_settings['tests']['hello'], 1)
 
         buildout['sublimetext'].update({
@@ -289,6 +316,12 @@ class TestRecipe(unittest.TestCase):
         )
         generated_settings = json.loads(read(os.path.join(self.location, _project_file)))
         self.assertNotIn('tests', generated_settings)
+        # Test:: default folders setting
+        # As completly overwrite file, so there is no folders option, so should have default
+        self.assertEqual(
+            generated_settings['folders'],
+            default_st3_folders_settings
+        )
 
     def tearDown(self):
         os.chdir(self.here)

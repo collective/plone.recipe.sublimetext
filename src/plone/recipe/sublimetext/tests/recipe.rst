@@ -71,14 +71,28 @@ SublimeText congiguration with all default options::
     False
     >>> 'python_package_paths' not in ST3_settings['settings'].keys()
     True
+    >>> ST3_settings['folders'][0]['path'] == '.'
+    True
 
-SublimeText congiguration test with custom location, custom flake8 exacutable::
+SublimeText congiguration test with custom location, custom flake8 exacutable and with existings settings.
+Test merged works, existing settings kept intact::
 
     >>> import os
     >>> import tempfile
     >>> custom_location = os.path.join(tempfile.gettempdir(), 'hshdsrthgdrts')
     >>> GLOBAL = {'custom_location': custom_location}
     >>> GLOBAL.update(globals())
+    >>> write(custom_location, 'plone.recipe.sublimetext.sublime-project',
+    ... """
+    ... {
+    ...     "folders": [{"path": "$(custom_location)s"}],
+    ...     "SublimeLinter": {
+    ...         "linters": {
+    ...             "flake8": {"@disable": true, "max-complexity": 10}
+    ...         }
+    ..      }
+    ... }
+    ... """ % {'custom_location': custom_location})
     >>> write(sample_buildout, 'buildout.cfg',
     ... """
     ... [buildout]
@@ -101,6 +115,12 @@ SublimeText congiguration test with custom location, custom flake8 exacutable::
     >>> output = system(buildout + ' -c buildout.cfg').lower()
     >>> ST3_settings = json.loads(read(custom_location, 'plone-recipe-sublime.sublime-project'))
     >>> ST3_settings['SublimeLinter']['linters']['flake8']['executable'] == '/fake/path/flake8'
+    True
+    >>> ST3_settings['SublimeLinter']['linters']['flake8']['@disable']
+    False
+    >>> ST3_settings['SublimeLinter']['linters']['flake8']['max-complexity']
+    10
+    >> ST3_settings['folders'][0]['path'] == custom_location
     True
     >>> import shutil
     >>> shutil.rmtree(custom_location)

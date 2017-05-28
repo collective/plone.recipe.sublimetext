@@ -72,3 +72,33 @@ Muilti Linters and without project name::
     >>> settings = json.loads(read('plone-recipe-sublime.sublime-project'))
     >>> 'pylint' in settings['Sublimelinter']['linters']
     True
+
+Usages Anaconda for all purpose (linting, autocompletion) and rest of all are not used::
+
+    >>> write('buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop = .
+    ... eggs =
+    ...     zc.buildout
+    ... parts = sublimetext
+    ...
+    ... [sublimetext]
+    ... recipe = plone.recipe.sublimetext
+    ... project-name = plone-recipe-sublime
+    ... eggs = ${buildout:eggs}
+    ... anaconda-enabled = True
+    ... anaconda-pep8-ignores =
+    ...     N802
+    ... """)
+    >>> system(buildout + ' -c buildout.cfg')
+    >>> import json
+    >>> settings = json.loads(read('plone-recipe-sublime.sublime-project'))
+    >>> 'build_systems' in settings.keys()
+    True
+    >>> 'extra_paths' in settings['settings'].keys()
+    True
+    >>> settings['settings']['anaconda_linting']
+    True
+    >>> settings['settings']['use_pylint']
+    False

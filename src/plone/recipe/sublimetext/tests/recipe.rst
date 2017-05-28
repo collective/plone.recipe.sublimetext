@@ -125,4 +125,40 @@ Test merged works, existing settings kept intact::
     >>> import shutil
     >>> shutil.rmtree(custom_location)
 
+Anaconda Settings Tests with default options::
 
+    >>> write(sample_buildout, 'buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop =
+    ...     %(test_dir)s/develop/sublimtexttest_pkg1
+    ... eggs =
+    ...     sublimtexttest_pkg1
+    ...     zc.recipe.egg
+    ...     zc.buildout
+    ... parts = sublimetext
+    ...
+    ... [sublimetext]
+    ... recipe = plone.recipe.sublimetext
+    ... packages = %(test_dir)s/Products
+    ... project-name = plone-recipe-sublime
+    ... eggs = ${buildout:eggs}
+    ... anaconda-enabled = True
+    ... anaconda-pep8-ignores =
+    ...     N802
+    ...     W291
+    ... """ % globals())
+    >>> output_lower = system(buildout + ' -c buildout.cfg').lower()
+    >>> ST3_settings = json.loads(read(sample_buildout, 'plone-recipe-sublime.sublime-project'))
+    >>> len(ST3_settings['settings']['extra_paths']) == 5
+    True
+    >>> 'build_systems' in ST3_settings.keys()
+    True
+    >>> len(ST3_settings['settings']['pep8_ignore']) == 2
+    True
+    >>> ST3_settings['settings']['anaconda_linting']
+    True
+    >>> 'SublimeLinter' not in ST3_settings.keys()
+    True
+    >>> 'python_package_paths' not in ST3_settings['settings'].keys()
+    True

@@ -116,6 +116,48 @@ sublimelinter-flake8-executable
 
     Project specific `Flake8`_ executable path, this will gives you lots flexibility over using global `Flake8`_ executable, because each project might have separate `Python`_ version.
 
+anaconda-enabled
+    Required: No
+
+    Default: False
+
+    This option is related to weather you want to enable `Anaconda`_ the python IDE package!
+
+anaconda-linting-enabled
+    Required: No
+
+    Default: True
+
+    If want to other library for liniting (i.e sublimelinter), keep it disabled, other than should be enabled. Like other parent options, it will respect parent (``anaconda-enabled``) option.
+
+anaconda-completion-enabled
+    Required: No
+
+    Default: True
+
+    Anaconda is using `Jedi`_ for autocompletion, so if you want to use (completion library) other than provided by Anaconda, make it disabled.
+
+anaconda-pylint-enabled
+    Required: No
+
+    Default: False
+
+    By default `Anaconda`_ liniting doing validation for PyFlakes, PEP8, PEP257. But you can use Pylint instead of PyFlakes by enabling this option.
+
+anaconda-validate-imports
+    Required: No
+
+    Default: True
+
+    It is always good that you want to see any invalid imports (for example: ``from fake.foo import bar``), but if you don't want this just disabled this option.
+
+anaconda-pep8-ignores
+    Required: No
+
+    Default: ''
+
+    If you want ignore some pep8 checklist (i.e N802), for case of muiltiple codes have to be separated by space or newline.
+
 ignore-develop
     Required: No
 
@@ -172,3 +214,4 @@ Known Issues
 .. _`Plone`: https://plone.org/
 .. _`Flake8`: https://pypi.python.org/pypi/flake8
 .. _`Python`: https://www.python.org/
+.. _`Anaconda`: http://damnwidget.github.io/anaconda/

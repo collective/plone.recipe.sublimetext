@@ -1,6 +1,7 @@
 {
     "ST3_DEFAULTS": {
-        "sublimelinter": false
+        "sublimelinter": false,
+        "python_interpreter": "$project_path/bin/python"
     },
     "ST3_FOLDER_OPTIONS": [
         {
@@ -19,8 +20,24 @@
         "paths": []
     },
     "JEDI_DEFAULTS": {
-        "python_interpreter": "$project_path/bin/python",
         "python_package_paths": []
+    },
+    "ANACONDA_DEFAULTS": {
+        "build_systems": [{
+            "name": "PRS:: Anaconda Python Builder",
+            "selector": "source.python",
+            "file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+            "shell_cmd": "$project_path/bin/python -u \"$file\""
+        }],
+        "settings": {
+            "anaconda_linting": false,
+            "disable_anaconda_completion": true,
+            "anaconda_linting_behaviour": "always",
+            "use_pylint": false,
+            "validate_imports": false,
+            "extra_paths": [],
+            "pep8_ignore": []
+        }
     }
 
 }

@@ -110,6 +110,18 @@ class Recipe:
         options['sublimelinter-flake8-enabled'] = self.options['sublimelinter-flake8-enabled'].lower() in\
             ('yes', 'true', 'on', '1', 'sure')
 
+        # Anaconda settings
+        options['anaconda-enabled'] = self.options['anaconda-enabled'].lower() in\
+            ('yes', 'true', 'on', '1', 'sure')
+        options['anaconda-linting-enabled'] = self.options['anaconda-linting-enabled'].lower() in\
+            ('yes', 'true', 'on', '1', 'sure')
+        options['anaconda-completion-enabled'] = self.options['anaconda-completion-enabled'].lower() in\
+            ('yes', 'true', 'on', '1', 'sure')
+        options['anaconda-pylint-enabled'] = self.options['anaconda-pylint-enabled'].lower() in\
+            ('yes', 'true', 'on', '1', 'sure')
+        options['anaconda-validate-imports'] = self.options['anaconda-validate-imports'].lower() in\
+            ('yes', 'true', 'on', '1', 'sure')
+
         return options
 
     def _set_defaults(self):
@@ -143,6 +155,14 @@ class Recipe:
         self.options.setdefault('ignores', '')
         self.options.setdefault('packages', '')
 
+        # Aanaconda Settings
+        self.options.setdefault('anaconda-enabled', 'False')
+        self.options.setdefault('anaconda-linting-enabled', 'True')
+        self.options.setdefault('anaconda-completion-enabled', 'True')
+        self.options.setdefault('anaconda-pylint-enabled', 'False')
+        self.options.setdefault('anaconda-validate-imports', 'True')
+        self.options.setdefault('anaconda-pep8-ignores', '')
+
     def _prepare_settings(self, eggs_locations):
         """ """
         options = self.normalize_options()
@@ -152,44 +172,76 @@ class Recipe:
             default_settings = json.load(f, **json_load_params)
 
         settings['settings'] = default_settings['ST3_DEFAULTS']
+        settings['settings']['python_interpreter'] = options['python-executable'],
 
         if options['jedi-enabled']:
 
             settings['settings'].update({
-                'python_interpreter': options['python-executable'],
                 'python_package_paths': eggs_locations
             })
 
         if options['sublimelinter-enabled']:
 
+            self._prepare_sublinter_settings(settings, default_settings, eggs_locations, options)
+
+        if options['anaconda-enabled']:
+
+            self._prepare_anaconda_settings(settings, default_settings, eggs_locations, options)
+
+        return settings
+
+    def _prepare_anaconda_settings(self, settings, default_settings, eggs_locations, options):
+        """ """
+        default_anaconda_settings = default_settings['ANACONDA_DEFAULTS']
+        settings['build_systems'] = default_anaconda_settings['build_systems']
+
+        settings['build_systems'][0].update({
+            'shell_cmd': '{project_path}/bin/python -u "$file"'.format(
+                project_path=self.buildout['buildout']['directory'])
+        })
+
+        settings['settings'].update(default_anaconda_settings['settings'])
+
+        settings['settings'].update({
+            'validate_imports': options['anaconda-validate-imports'],
+            'disable_anaconda_completion': not options['anaconda-completion-enabled'],
+            'anaconda_linting': options['anaconda-linting-enabled'],
+            'use_pylint': options['anaconda-pylint-enabled'],
+            'extra_paths': eggs_locations
+        })
+        if options['anaconda-pep8-ignores']:
             settings['settings'].update({
+                'pep8_ignore': options['anaconda-pep8-ignores'].split()
+            })
+
+    def _prepare_sublinter_settings(self, settings, default_settings, eggs_locations, options):
+        """ """
+        settings['settings'].update({
                 'sublimelinter': True
             })
 
-            settings['SublimeLinter'] = default_settings['SUBLIMELINTER_DEFAULTS']
-            settings['SublimeLinter']['@python'] = '{0}.{1}'.format(sys.version_info[0], sys.version_info[1])
+        settings['SublimeLinter'] = default_settings['SUBLIMELINTER_DEFAULTS']
+        settings['SublimeLinter']['@python'] = '{0}.{1}'.format(sys.version_info[0], sys.version_info[1])
 
-            # Now check for flake8
-            if options['sublimelinter-flake8-enabled']:
+        # Now check for flake8
+        if options['sublimelinter-flake8-enabled']:
 
-                settings['SublimeLinter']['linters']['flake8'] =\
-                    default_settings['SUBLIMELINTER_FLAKE8_DEFAULTS']
+            settings['SublimeLinter']['linters']['flake8'] =\
+                default_settings['SUBLIMELINTER_FLAKE8_DEFAULTS']
 
-                if options['sublimelinter-flake8-executable']:
-                    settings['SublimeLinter']['linters']['flake8']['executable'] =\
-                        options['sublimelinter-flake8-executable']
+            if options['sublimelinter-flake8-executable']:
+                settings['SublimeLinter']['linters']['flake8']['executable'] =\
+                    options['sublimelinter-flake8-executable']
 
-            # Now check for pylint
-            if options['sublimelinter-pylint-enabled']:
-                settings['SublimeLinter']['linters']['pylint'] = \
+        # Now check for pylint
+        if options['sublimelinter-pylint-enabled']:
+            settings['SublimeLinter']['linters']['pylint'] = \
                     default_settings['SUBLIMELINTER_PYLINTER_DEFAULTS']
 
-                settings['SublimeLinter']['linters']['pylint'].update({
-                    'paths': eggs_locations
+            settings['SublimeLinter']['linters']['pylint'].update({
+                'paths': eggs_locations
 
-                })
-
-        return settings
+            })
 
     def _write_project_file(self, project_file, settings, overwrite=False):
         """ """

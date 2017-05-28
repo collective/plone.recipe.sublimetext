@@ -4,7 +4,9 @@ Changelog
 1.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+New features:
+
+- [#4] `Anaconda support <https://github.com/nazrulworld/plone.recipe.sublimetext/issues/4>`_ [nazrulworld]
 
 
 1.0.1 (2017-05-16)

@@ -46,7 +46,8 @@ class TestRecipe(unittest.TestCase):
         recipe_options.update({
             'jedi-enabled': '1',
             'sublimelinter-enabled': '1',
-            'sublimelinter-pylint-enabled': 'True'
+            'sublimelinter-pylint-enabled': 'True',
+            'anaconda-enabled': 'True'
         })
         buildout['sublimetext'] = recipe_options
         recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
@@ -57,6 +58,11 @@ class TestRecipe(unittest.TestCase):
         )
         # should be three, zc.buildout, zc,recipe.egg, python site-package path
         self.assertEqual(3, len(generated_settings['settings']['python_package_paths']))
+        self.assertEqual(3, len(generated_settings['settings']['extra_paths']))
+        self.assertIn(
+            recipe.buildout['buildout']['directory'] + '/bin/python',
+            generated_settings['build_systems'][0]['shell_cmd']
+        )
 
         # Test with custom location with package
         buildout['sublimetext'].update({
@@ -177,21 +183,24 @@ class TestRecipe(unittest.TestCase):
             '/tmp/eggs/egg2.egg'
         ]
 
-        with open(JSON_TEMPLATE, 'r') as f:
-            default_settings = json.load(f)
-
         st3_settings = recipe._prepare_settings(test_eggs_locations)
-        # All are default options so should be ST3_DEFAULTS settings only
-        self.assertEqual(st3_settings['settings'], default_settings['ST3_DEFAULTS'])
+
         # By Default Sublimelinter is not enabled
         self.assertFalse(st3_settings['settings']['sublimelinter'])
         self.assertNotIn('SublimeLinter', st3_settings)
+
+        # Anaconda is not enabled as well
+        self.assertNotIn('build_systems', st3_settings)
+        self.assertNotIn('extra_paths', st3_settings['settings'])
 
         recipe_options['jedi-enabled'] = 'True'
         recipe_options['sublimelinter-enabled'] = 'True'
         recipe_options['sublimelinter-pylint-enabled'] = 'True'
         recipe_options['sublimelinter-flake8-enabled'] = 'True'
         recipe_options['sublimelinter-flake8-executable'] = '/fake/path/flake8'
+        recipe_options['anaconda-enabled'] = 'True'
+        recipe_options['anaconda-pylint-enabled'] = 'True'
+        recipe_options['anaconda-pep8-ignores'] = 'N802\nW291'
 
         buildout['sublimetext'].update(recipe_options)
 
@@ -202,6 +211,13 @@ class TestRecipe(unittest.TestCase):
         self.assertIn('SublimeLinter', st3_settings)
         self.assertEqual(test_eggs_locations, st3_settings['settings']['python_package_paths'])
         self.assertFalse(st3_settings['SublimeLinter']['linters']['pylint']['@disable'])
+
+        # Test Anaconda Settings are avialable
+        self.assertIn('build_systems', st3_settings)
+        self.assertTrue(st3_settings['settings']['anaconda_linting'])
+        self.assertTrue(st3_settings['settings']['use_pylint'])
+        self.assertEqual(len(st3_settings['settings']['pep8_ignore']), 2)
+        self.assertTrue(st3_settings['settings']['validate_imports'])
 
         # Test Parent `sublimelinter-enabled` is respected
         # We all children options of sublimelinter are enabled.
@@ -288,7 +304,7 @@ class TestRecipe(unittest.TestCase):
 
         buildout['sublimetext'].update({
             'sublimelinter-enabled': 'True',
-            'sublimelinter-flake8-enabled': 'True',
+            'sublimelinter-flake8-enabled': 'False',
             'sublimelinter-pylint-enabled': 'True',
             'jedi-enabled': 'True'
         })
@@ -307,6 +323,8 @@ class TestRecipe(unittest.TestCase):
         self.assertNotEqual(generated_settings['settings'], default_settings['ST3_DEFAULTS'])
         self.assertEqual(test_eggs_locations, generated_settings['settings']['python_package_paths'])
         self.assertIn('SublimeLinter', generated_settings)
+        # Test paths are added for `pylint`
+        self.assertEqual(2, len(generated_settings['SublimeLinter']['linters']['pylint']['paths']))
 
         # Test: overwrite works!
         recipe._write_project_file(
@@ -322,6 +340,30 @@ class TestRecipe(unittest.TestCase):
             generated_settings['folders'],
             default_st3_folders_settings
         )
+
+        # Test: Anaconda Settings is working
+
+        buildout['sublimetext'].update({
+            'anaconda-enabled': 'True',
+            'anaconda-pep8-ignores': 'N802 W291'
+        })
+
+        recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
+        st3_settings = recipe._prepare_settings(test_eggs_locations)
+
+        recipe._write_project_file(
+            os.path.join(self.location, _project_file),
+            st3_settings,
+            True
+        )
+
+        generated_settings = json.loads(read(os.path.join(self.location, _project_file)))
+        self.assertIn('build_systems', generated_settings)
+        self.assertEqual(generated_settings['build_systems'][0]['name'], 'PRS:: Anaconda Python Builder')
+        # By default pylint disabled
+        self.assertFalse(generated_settings['settings']['use_pylint'])
+        # Should have two eggs paths in `extra_paths`
+        self.assertEqual(len(generated_settings['settings']['extra_paths']), 2)
 
     def tearDown(self):
         os.chdir(self.here)

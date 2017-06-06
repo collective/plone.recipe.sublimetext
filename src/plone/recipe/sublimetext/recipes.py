@@ -33,10 +33,11 @@ if PY2:
 
 class Recipe:
 
-    """zc.buildout recipe"""
+    """zc.buildout recipe for sublimetext project settings:
+    """
 
     def __init__(self, buildout, name, options):
-
+        """ """
         self.buildout, self.name, self.options = buildout, name, options
         self.logger = logging.getLogger(self.name)
 
@@ -60,7 +61,11 @@ class Recipe:
             if l.strip()]
 
     def install(self):
-        """Let's buildout sublimetext project file"""
+        """Let's build sublimetext project file:
+        This is the method will be called by buildout it-self and this recipe
+        will generate or/update sublime project file (*.sublime-project) based
+        on provided options.
+        """
         options = self.normalize_options()
 
         location = options['location']
@@ -96,7 +101,9 @@ class Recipe:
     update = install
 
     def normalize_options(self):
-        """ """
+        """This method is simply doing tranformation of cfg string to python datatype.
+        For example: yes(cfg) = True(python), 2(cfg) = 2(python)"""
+
         # Check for required and optional options
         options = self.options.copy()
 
@@ -125,7 +132,8 @@ class Recipe:
         return options
 
     def _set_defaults(self):
-        """ """
+        """This is setting default values of all possible options"""
+
         self.options.setdefault('location', self.buildout['buildout']['directory'])
 
         def guess_project_name():
@@ -191,7 +199,8 @@ class Recipe:
         return settings
 
     def _prepare_anaconda_settings(self, settings, default_settings, eggs_locations, options):
-        """ """
+        """All anaconda specific settings are handled by this method."""
+
         default_anaconda_settings = default_settings['ANACONDA_DEFAULTS']
         settings['build_systems'] = default_anaconda_settings['build_systems']
 
@@ -215,7 +224,8 @@ class Recipe:
             })
 
     def _prepare_sublinter_settings(self, settings, default_settings, eggs_locations, options):
-        """ """
+        """All sublinter related settings are done by this method."""
+
         settings['settings'].update({
                 'sublimelinter': True
             })
@@ -244,7 +254,8 @@ class Recipe:
             })
 
     def _write_project_file(self, project_file, settings, overwrite=False):
-        """ """
+        """Project File Writer:
+        This method is actual doing writting project file to file system."""
         try:
             if not overwrite and os.path.exists(project_file):
 
@@ -268,7 +279,9 @@ class Recipe:
             raise UserError(str(exc))
 
     def _merge_settings(self, new_settings, existing_settings):
-        """ """
+        """Respect Existing Settings:
+        Depends on overwrite option, this method is intelligently respect/keep
+        any existing settings, only replace if value affected by buildout options."""
 
         for key, value in new_settings.items():
 
@@ -286,7 +299,9 @@ class Recipe:
 
 
 def uninstall(name, options):
-    """ """
+    """Nothing much need to do with uninstall, because this recipe is doing so much filesystem writting.
+    Depends overwrite option, generated project file is removed."""
+
     logger = logging.getLogger(name)
     logger.info('uninstalling ...')
 

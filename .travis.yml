@@ -15,7 +15,6 @@ env:
 matrix:
   allow_failures:
     - python: 3.4
-    - python: 3.6
 
 install:
   - pip install -U pip

@@ -48,7 +48,7 @@ setup(
         'Topic :: Software Development :: Build Tools',
         'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
     ],
-    keywords='python buildout plone sublime-text jedi sublimelinter buildout-recipe',
+    keywords='python buildout plone sublime-text jedi sublimelinter buildout-recipe anaconda',
     author='Md Nazrul Islam',
     author_email='connect2nazrul@gmail.com',
     url='https://github.com/nazrulworld/plone.recipe.sublimetext',

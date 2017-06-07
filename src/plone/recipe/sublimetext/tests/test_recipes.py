@@ -17,9 +17,9 @@ JSON_TEMPLATE = os.path.join(os.path.dirname(os.path.abspath(os.path.dirname(__f
 TEST_DIR = os.path.abspath(os.path.dirname(__file__))
 
 if PY2:
-    unicode = unicode
+    str_ = basestring
 else:
-    unicode = str
+    str_ = str
 
 
 class TestRecipe(unittest.TestCase):
@@ -65,7 +65,7 @@ class TestRecipe(unittest.TestCase):
         # should be three, zc.buildout, zc,recipe.egg, python site-package path
         self.assertEqual(3, len(generated_settings['settings']['python_package_paths']))
         self.assertEqual(3, len(generated_settings['settings']['extra_paths']))
-        self.assertIsInstance(generated_settings['settings']['python_interpreter'], (str, unicode))
+        self.assertIsInstance(generated_settings['settings']['python_interpreter'], str_)
         self.assertIn(
             recipe.buildout['buildout']['directory'] + '/bin/python',
             generated_settings['build_systems'][0]['shell_cmd']

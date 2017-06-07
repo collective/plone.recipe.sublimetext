@@ -1,5 +1,4 @@
 # _*_ coding: utf-8 _*_
-from plone.recipe.sublimetext.recipes import PY2
 from zc.buildout import rmtree
 from zc.buildout import UserError
 from zc.buildout.testing import Buildout
@@ -16,9 +15,9 @@ import unittest
 JSON_TEMPLATE = os.path.join(os.path.dirname(os.path.abspath(os.path.dirname(__file__))), 'template.json')
 TEST_DIR = os.path.abspath(os.path.dirname(__file__))
 
-if PY2:
+try:
     str_ = basestring
-else:
+except NameError:
     str_ = str
 
 

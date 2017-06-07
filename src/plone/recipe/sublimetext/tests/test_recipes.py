@@ -1,4 +1,5 @@
 # _*_ coding: utf-8 _*_
+from plone.recipe.sublimetext.recipes import PY2
 from zc.buildout import rmtree
 from zc.buildout import UserError
 from zc.buildout.testing import Buildout
@@ -14,6 +15,11 @@ import unittest
 
 JSON_TEMPLATE = os.path.join(os.path.dirname(os.path.abspath(os.path.dirname(__file__))), 'template.json')
 TEST_DIR = os.path.abspath(os.path.dirname(__file__))
+
+if PY2:
+    unicode = unicode
+else:
+    unicode = str
 
 
 class TestRecipe(unittest.TestCase):
@@ -59,7 +65,7 @@ class TestRecipe(unittest.TestCase):
         # should be three, zc.buildout, zc,recipe.egg, python site-package path
         self.assertEqual(3, len(generated_settings['settings']['python_package_paths']))
         self.assertEqual(3, len(generated_settings['settings']['extra_paths']))
-        self.assertIsInstance(generated_settings['settings']['python_interpreter'], (str, basestring))
+        self.assertIsInstance(generated_settings['settings']['python_interpreter'], (str, unicode))
         self.assertIn(
             recipe.buildout['buildout']['directory'] + '/bin/python',
             generated_settings['build_systems'][0]['shell_cmd']

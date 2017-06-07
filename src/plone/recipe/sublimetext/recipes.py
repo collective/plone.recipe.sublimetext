@@ -20,11 +20,7 @@ json_dump_params = {
 }
 json_load_params = {}
 
-default_st3_folders_settings = [
-        {
-            'path': '.'
-        }
-    ]
+default_st3_folders_settings = [{'path': '.'}]
 
 if PY2:
     json_dump_params['encoding'] = 'utf-8'
@@ -180,7 +176,7 @@ class Recipe:
             default_settings = json.load(f, **json_load_params)
 
         settings['settings'] = default_settings['ST3_DEFAULTS']
-        settings['settings']['python_interpreter'] = options['python-executable'],
+        settings['settings']['python_interpreter'] = options['python-executable']
 
         if options['jedi-enabled']:
 
@@ -226,9 +222,7 @@ class Recipe:
     def _prepare_sublinter_settings(self, settings, default_settings, eggs_locations, options):
         """All sublinter related settings are done by this method."""
 
-        settings['settings'].update({
-                'sublimelinter': True
-            })
+        settings['settings'].update({'sublimelinter': True})
 
         settings['SublimeLinter'] = default_settings['SUBLIMELINTER_DEFAULTS']
         settings['SublimeLinter']['@python'] = '{0}.{1}'.format(sys.version_info[0], sys.version_info[1])
@@ -245,8 +239,8 @@ class Recipe:
 
         # Now check for pylint
         if options['sublimelinter-pylint-enabled']:
-            settings['SublimeLinter']['linters']['pylint'] = \
-                    default_settings['SUBLIMELINTER_PYLINTER_DEFAULTS']
+            settings['SublimeLinter']['linters']['pylint'] =\
+                default_settings['SUBLIMELINTER_PYLINTER_DEFAULTS']
 
             settings['SublimeLinter']['linters']['pylint'].update({
                 'paths': eggs_locations
@@ -272,6 +266,7 @@ class Recipe:
                 settings['folders'] = default_st3_folders_settings
 
             with open(project_file, 'w') as f:
+                self.logger.info('Generate sublimetext project at `{0}`.'.format(project_file))
                 json.dump(settings, f, **json_dump_params)
 
         except ValueError as exc:

@@ -59,6 +59,7 @@ class TestRecipe(unittest.TestCase):
         # should be three, zc.buildout, zc,recipe.egg, python site-package path
         self.assertEqual(3, len(generated_settings['settings']['python_package_paths']))
         self.assertEqual(3, len(generated_settings['settings']['extra_paths']))
+        self.assertIsInstance(generated_settings['settings']['python_interpreter'], (str, basestring))
         self.assertIn(
             recipe.buildout['buildout']['directory'] + '/bin/python',
             generated_settings['build_systems'][0]['shell_cmd']

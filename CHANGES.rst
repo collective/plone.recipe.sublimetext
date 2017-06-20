@@ -7,6 +7,7 @@ Changelog
 Bugfixes:
 
 - [#7]`python_interpreter` value as list but expected as string.
+  [nazrulworld]
 
 
 1.1.0 (2017-06-07)

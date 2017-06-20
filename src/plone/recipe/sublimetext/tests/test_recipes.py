@@ -165,7 +165,7 @@ class TestRecipe(unittest.TestCase):
         # Test: if any ``sublime-project`` suffix file is available inside buildout directory
         # that should be picked as default project file name
         _project_file = 'human_project'
-        write(self.location, _project_file + '.sublime-project', '''[]''')
+        write(self.location, _project_file + '.sublime-project', '[]')
         # clear previously assaigned default
         del buildout['sublimetext']['project-name']
 
@@ -411,7 +411,7 @@ class TestRecipeUninstall(unittest.TestCase):
         write(
             self.location,
             filename,
-            '''{"hello": "T20"}'''
+            '{"hello": "T20"}'
         )
         uninstall(recipe.name, recipe.options)
 

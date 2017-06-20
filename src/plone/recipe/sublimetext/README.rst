@@ -46,7 +46,7 @@ Standard buildout::
     >>> 'flake8' in settings['Sublimelinter']['linters']
     True
 
-Muilti Linters and without project name::
+Muilti linters and without project name::
 
     >>> write('buildout.cfg',
     ... """
@@ -67,7 +67,7 @@ Muilti Linters and without project name::
     ... """)
     >>> system(buildout + ' -c buildout.cfg')
 
-(project filename shoul be ``plone-recipe-sublime.sublime-project`` as previously generated)::
+(project filename should be ``plone-recipe-sublime.sublime-project`` as previously generated)::
 
     >>> settings = json.loads(read('plone-recipe-sublime.sublime-project'))
     >>> 'pylint' in settings['Sublimelinter']['linters']

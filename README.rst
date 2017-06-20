@@ -28,26 +28,27 @@
 Introduction
 ============
 
-``plone.recipe.sublimetext`` is for `ST3`_ lover who wants python IDE like features while developing python `Buildout`_ based project. This tool will help you to create per project basis sublimetext settings with appropriate paths location assignment. Currently ``plone.recipe.sublimetext`` comes with supporting settings for `Jedi`_, `Sublimelinter`_, `Sublimelinter-Flake8`_, `Sublimelinter-Pylint`_.
-A general question may arise that why we will use this tool, weather we can create `ST3`_ project settings easily (we have better knowledge over `ST3`_ configuration)?
-Well i completely agree with you, but if you want to get benefited from `Jedi`_'s python autocompletion feature (basically I am lover of autocompletion), you have to add all eggs links for `Jedi`_'s paths settings and it is hard to manage eggs links manually if the size of project is big (think about any `Plone`_ powered project), beside `Sublimelinter-Pylint`_ also need list of paths to be added to sys.path  to find modules.
+``plone.recipe.sublimetext`` is the buildout recipe for `ST3`_ lover who wants python IDE like features while developing python `Buildout`_ based project. This tool will help them to create per project basis sublimetext settings with appropriate paths location assignment. Currently ``plone.recipe.sublimetext`` comes with supporting settings for `Anaconda`_ (the all-in-one package), `Jedi`_, `Sublimelinter`_, `Sublimelinter-Flake8`_, `Sublimelinter-Pylint`_.
+A general question may arise that why we will use this tool, whether we can create `ST3`_ project settings easily (we have better knowledge over `ST3`_ configuration)?
+Well i completely agree with you, but if you want to get benefited from `Anaconda`_ or `Jedi`_'s python autocompletion feature (basically I am lover of autocompletion), you have to add all eggs links for `Anaconda`_ or `Jedi`_'s paths settings and it is hard to manage eggs links manually if the size of project is big (think about any `Plone`_ powered project), beside `Sublimelinter-Pylint`_ also need list of paths to be added to sys.path  to find modules.
 
 Installation
 ============
 
-Install ``plone.recipe.sublimetext`` is simple enough, just a section for ``sublimetext`` to your buildout. Before using ``plone.recipe.sublimetext`` make sure  `Jedi`_, `Sublimelinter`_, `Sublimelinter-Flake8`_ and/or `Sublimelinter-Pylint`_ plugins are already installed at your `ST3`_. You could follow full [`instruction here
-<https://nazrulworld.wordpress.com/2017/05/06/make-sublime-text-as-the-best-ide-for-full-stack-python-development>`_] if not your `ST3`_ setup yet.
+Install ``plone.recipe.sublimetext`` is simple enough, just need to create a section for ``sublimetext`` to your buildout. Before using ``plone.recipe.sublimetext`` make sure  `Jedi`_, `Sublimelinter`_, `Sublimelinter-Flake8`_ and/or `Sublimelinter-Pylint`_ plugins are already installed at your `ST3`_. You could follow full [`instruction here
+<https://nazrulworld.wordpress.com/2017/05/06/make-sublime-text-as-the-best-ide-for-full-stack-python-development>`_] if not your `ST3`_ setup yet. Flake8 linter need `flake8 executable <https://pypi.python.org/pypi/flake8>`_ available globally (unless you are going to use local flake8), also it is recommended you install some awsome flake8 plugins (flake8-isort, flake8-coding, pep8-naming, flake8-blind-except, flake8-quotes and more could find in pypi)
 
-Example Buildout::
-    [buildout]
-    parts += sublimetext
+    Example Buildout::
 
-    [sublimetext]
-    recipe = plone.recipe.sublimetext
-    eggs = ${buildout:eggs}
-    jedi-enabled = True
-    sublimelinter-enabled = True
-    sublimelinter-pylint-enabled = True
+        [buildout]
+        parts += sublimetext
+
+        [sublimetext]
+        recipe = plone.recipe.sublimetext
+        eggs = ${buildout:eggs}
+        jedi-enabled = True
+        sublimelinter-enabled = True
+        sublimelinter-pylint-enabled = True
 
 Available Options
 -----------------
@@ -57,15 +58,15 @@ eggs
 
     Default: None
 
-    Your project's list of eggs, that going to be added in path location for `Jedi`_ and `Sublimelinter-Pylint`_.
+    Your project's list of eggs, those are going to be added in path location for `Jedi`_ and/or `Sublimelinter-Pylint`_ or `Anaconda`_.
 
 overwrite
     Required: No
 
     Default: False
 
-    This option indicates wheather existing settings should be cleaned first or just updating changes.
-    This situation may happen, you did create settings file manually with other configuration (those are not managed by ``plone.recipe.sublimetext``) and you want keep those settings.
+    This option indicates whether existing settings should be cleaned first or just updating changes.
+    This situation may happen, you did create settings file manually with other configuration (those are not managed by ``plone.recipe.sublimetext``) and you want keep those settings intact.
 
 python-executable
     Required: No
@@ -77,51 +78,51 @@ python-executable
 project-name
     Required: No
 
-    Default: if you have a existing `ST3`_ project file(settings file) in project/buildout root directory, ``plone.recipe.sublimetext`` will choose it as ``project-name``, other than project/buildout directory name will become as ``project-name``
+    Default: if you have a existing `ST3`_ project file(settings file) in project/buildout's root directory, ``plone.recipe.sublimetext`` will choose it as ``project-name``, other than project/buildout directory name will become as ``project-name``
 
-    The settings file name (no need to add suffix ``.sublime-project``)
+    Don't add suffix ``.sublime-project``, when you provide the project name.
 
 jedi-enabled
     Required: No
 
     Default: False
 
-    This option related to enable/disable Sublime `Jedi`_
+    This option is related to enable/disable Sublime `Jedi`_
 
 sublimelinter-enabled
     Required: No
 
     Default: False
 
-    Weather `Sublimelinter`_ you want to use this feature or not.
+    Whether `Sublimelinter`_'s features you want to use or not.
 
 sublimelinter-pylint-enabled
     Required: No
 
     Default: False
 
-    `Sublimelinter-Pylint`_ if you want to use or not; ``sublimelinter-enabled`` option will be respected, means if parent option is set as disabled but you enable this option will not work.
+     If you want to use `Sublimelinter-Pylint`_ or not; ``sublimelinter-enabled`` option will be respected, means if parent option is set as disabled but you enable this option will not work.
 
 sublimelinter-flake8-enabled
     Required: No
 
     Default: False
 
-    wheather you want to use `Sublimelinter-Flake8`_ or not. Like ``sublimelinter-pylint-enabled`` parent option will be respected.
+    Whether you want to use `Sublimelinter-Flake8`_ or not. Like ``sublimelinter-pylint-enabled`` parent option will be respected.
 
 sublimelinter-flake8-executable
     Required: No
 
     Default: False
 
-    Project specific `Flake8`_ executable path, this will gives you lots flexibility over using global `Flake8`_ executable, because each project might have separate `Python`_ version.
+    Project specific `Flake8`_ executable path, this will give you lots flexibility over using global `Flake8`_ executable, because each project might have separate `Python`_ version.
 
 anaconda-enabled
     Required: No
 
     Default: False
 
-    This option is related to weather you want to enable `Anaconda`_ the python IDE package!
+    This option is related to whether you want to enable `Anaconda`_ the all-in-one python IDE package!
 
 anaconda-linting-enabled
     Required: No
@@ -135,14 +136,14 @@ anaconda-completion-enabled
 
     Default: True
 
-    Anaconda is using `Jedi`_ for autocompletion, so if you want to use (completion library) other than provided by Anaconda, make it disabled.
+    Anaconda is using `Jedi`_ engine for autocompletion, but if you want to use Sublime-Jedi other than provided by Anaconda, make it disabled.
 
 anaconda-pylint-enabled
     Required: No
 
     Default: False
 
-    By default `Anaconda`_ liniting doing validation for PyFlakes, PEP8, PEP257. But you can use Pylint instead of PyFlakes by enabling this option.
+    By default `Anaconda`_ liniting doing validation using PyFlakes, PEP8, PEP257. But you can use Pylint instead of PyFlakes by enabling this option.
 
 anaconda-validate-imports
     Required: No
@@ -156,7 +157,7 @@ anaconda-pep8-ignores
 
     Default: ''
 
-    If you want ignore some pep8 checklist (i.e N802), for case of muiltiple codes have to be separated by space or newline.
+    If you want ignore some pep8 checklist (i.e N802 is for pep8 naming).
 
 ignore-develop
     Required: No
@@ -214,4 +215,4 @@ Known Issues
 .. _`Plone`: https://plone.org/
 .. _`Flake8`: https://pypi.python.org/pypi/flake8
 .. _`Python`: https://www.python.org/
-.. _`Anaconda`: http://damnwidget.github.io/anaconda/
+.. _`Anaconda`: https://nazrul.me/2017/06/10/make-anaconda-powered-sublimetext-as-powerful-python-ide-for-full-stack-development/

@@ -4,7 +4,9 @@ Changelog
 1.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+Bugfixes:
+
+- [#8] `Install using pip in virtualenv got error <https://github.com/nazrulworld/plone.recipe.sublimetext/issues/8>`_ 
 
 
 1.1.1 (2017-06-20)

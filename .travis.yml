@@ -18,7 +18,8 @@ matrix:
 
 install:
   - pip install -U pip
-  - python bootstrap-buildout.py --setuptools-version=36.2.0
+  - pip install setuptools==36.2.0
+  - python bootstrap-buildout.py
   - bin/buildout -c $CONF annotate
   - bin/buildout -N -t 3 -c $CONF
 script:

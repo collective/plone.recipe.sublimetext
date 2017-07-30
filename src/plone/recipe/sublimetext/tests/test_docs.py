@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Doctest runner for 'collective.recipe.omelette'.
-"""
-__docformat__ = 'restructuredtext'
-
+"""Doctest runner for 'plone.recipe.sublimetext'."""
 from zc.buildout.testing import read  # noqa: F401
 from zope.testing import renormalizing
 
@@ -14,6 +10,8 @@ import unittest
 import zc.buildout.testing
 import zc.buildout.tests
 
+
+__docformat__ = 'restructuredtext'
 
 optionflags = (
     doctest.ELLIPSIS |

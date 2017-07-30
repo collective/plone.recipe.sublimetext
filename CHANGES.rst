@@ -4,7 +4,7 @@ Changelog
 1.1.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Repository ownership transfered to `Plone Collective <https://collective.github.io/>`_
 
 
 1.1.2 (2017-07-02)
@@ -12,7 +12,7 @@ Changelog
 
 Bugfixes:
 
-- [#8] `Install using pip in virtualenv got error <https://github.com/nazrulworld/plone.recipe.sublimetext/issues/8>`_ 
+- [#8] `Install using pip in virtualenv got error <https://github.com/collective/plone.recipe.sublimetext/issues/8>`_
 
 
 1.1.1 (2017-06-20)
@@ -29,7 +29,7 @@ Bugfixes:
 
 New features:
 
-- [#4] `Anaconda support <https://github.com/nazrulworld/plone.recipe.sublimetext/issues/4>`_ [nazrulworld]
+- [#4] `Anaconda support <https://github.com/collective/plone.recipe.sublimetext/issues/4>`_ [nazrulworld]
 
 
 1.0.1 (2017-05-16)
@@ -37,7 +37,7 @@ New features:
 
 Bugfixes:
 
-- [#1] `Required options for sublime text project file is missing <https://github.com/nazrulworld/plone.recipe.sublimetext/issues/1>`_
+- [#1] `Required options for sublime text project file is missing <https://github.com/collective/plone.recipe.sublimetext/issues/1>`_
 
 
 1.0.0 (2017-05-15)

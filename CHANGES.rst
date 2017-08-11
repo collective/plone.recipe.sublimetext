@@ -4,7 +4,8 @@ Changelog
 1.1.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Enable using the omelette as a basis for jedi.
+  [sunew]
 
 
 1.1.3 (2017-07-30)

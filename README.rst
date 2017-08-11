@@ -89,6 +89,20 @@ jedi-enabled
 
     This option is related to enable/disable Sublime `Jedi`_
 
+jedi-use-omelette
+    Required: No
+
+    Default: False
+
+    Use the omelette as basis for jedi autocompletion and go-to-definition. See `collective.recipe.omelette <https://pypi.python.org/pypi/collective.recipe.omelette>`_
+
+omelette-location
+    Required: No
+
+    Default: ${buildout:directory}/parts/omelette - the default omelette location.
+
+    For use with jedi-use-omelette, but unless the omelette is installed at a custom location, the default should be fine.
+
 sublimelinter-enabled
     Required: No
 

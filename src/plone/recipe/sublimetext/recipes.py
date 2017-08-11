@@ -68,6 +68,9 @@ class Recipe:
         if not os.path.exists(location):
             os.mkdir(location)
         eggs_locations = set()
+        develop_eggs_locations = set()
+        develop_eggs = os.listdir(self.buildout['buildout']['develop-eggs-directory'])
+        develop_eggs = [dev_egg[:-9] for dev_egg in develop_eggs]
 
         try:
             requirements, ws = self.egg.working_set()
@@ -77,6 +80,8 @@ class Recipe:
                 project_name = dist.project_name
                 if project_name not in self.ignored_eggs:
                     eggs_locations.add(dist.location)
+                if project_name in develop_eggs:
+                    develop_eggs_locations.add(dist.location)
 
             for package in self.packages:
                 eggs_locations.add(package)
@@ -84,7 +89,7 @@ class Recipe:
         except Exception as exc:
             raise UserError(str(exc))
 
-        st3_settings = self._prepare_settings(list(eggs_locations))
+        st3_settings = self._prepare_settings(list(eggs_locations), list(develop_eggs_locations))
         project_file = os.path.join(
             options['location'],
             options['project-name'] + '.sublime-project'
@@ -105,6 +110,8 @@ class Recipe:
 
         options['overwrite'] = self.options['overwrite'].lower() in ('yes', 'true', 'on', '1', 'sure')
         options['jedi-enabled'] = self.options['jedi-enabled'].lower() in\
+            ('yes', 'true', 'on', '1', 'sure')
+        options['jedi-use-omelette'] = self.options['jedi-use-omelette'].lower() in\
             ('yes', 'true', 'on', '1', 'sure')
         options['sublimelinter-enabled'] = self.options['sublimelinter-enabled'].lower() in\
             ('yes', 'true', 'on', '1', 'sure')
@@ -149,6 +156,10 @@ class Recipe:
         self.options.setdefault('project-name', guess_project_name())
         self.options.setdefault('overwrite', 'False')
         self.options.setdefault('jedi-enabled', 'False')
+        self.options.setdefault('jedi-use-omelette', 'False')
+        self.options.setdefault('omelette-location', os.path.join(
+            self.buildout['buildout']['parts-directory'], 'omelette')
+        )
         self.options.setdefault('sublimelinter-enabled', 'False')
         self.options.setdefault('sublimelinter-pylint-enabled', 'False')
         self.options.setdefault('sublimelinter-flake8-enabled', 'False')
@@ -167,7 +178,7 @@ class Recipe:
         self.options.setdefault('anaconda-validate-imports', 'True')
         self.options.setdefault('anaconda-pep8-ignores', '')
 
-    def _prepare_settings(self, eggs_locations):
+    def _prepare_settings(self, eggs_locations, develop_eggs_locations):
         """ """
         options = self.normalize_options()
         settings = dict(settings={})
@@ -180,9 +191,22 @@ class Recipe:
 
         if options['jedi-enabled']:
 
-            settings['settings'].update({
-                'python_package_paths': eggs_locations
-            })
+            if options['jedi-use-omelette']:
+                # Add the omelette and the development eggs to the jedi list.
+                # This has the advantage of opening files at the omelette location,
+                # keeping open files inside the project. Making it possible to
+                # navigate to the location in the project, syncing the toolbar, and
+                # inspecting the full module not just the individual file.
+                settings['settings'].update({
+                    'python_package_paths': [options['omelette-location']] + develop_eggs_locations
+                })
+            else:
+                # Add the paths of all eggs to the jedi list, using the absolute
+                # location of the eggs (which usually is at the buildout eggs cache,
+                # outside of the project).
+                settings['settings'].update({
+                    'python_package_paths': eggs_locations
+                })
 
         if options['sublimelinter-enabled']:
 

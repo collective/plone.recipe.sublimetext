@@ -189,7 +189,12 @@ class TestRecipe(unittest.TestCase):
             '/tmp/eggs/egg2.egg'
         ]
 
-        st3_settings = recipe._prepare_settings(test_eggs_locations)
+        develop_eggs_locations = []
+
+        st3_settings = recipe._prepare_settings(
+            test_eggs_locations,
+            develop_eggs_locations
+        )
 
         # By Default Sublimelinter is not enabled
         self.assertFalse(st3_settings['settings']['sublimelinter'])
@@ -211,7 +216,10 @@ class TestRecipe(unittest.TestCase):
         buildout['sublimetext'].update(recipe_options)
 
         recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
-        st3_settings = recipe._prepare_settings(test_eggs_locations)
+        st3_settings = recipe._prepare_settings(
+            test_eggs_locations,
+            develop_eggs_locations
+        )
 
         self.assertTrue(st3_settings['settings']['sublimelinter'])
         self.assertIn('SublimeLinter', st3_settings)
@@ -230,7 +238,10 @@ class TestRecipe(unittest.TestCase):
         del buildout['sublimetext']['sublimelinter-enabled']
 
         recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
-        st3_settings = recipe._prepare_settings(test_eggs_locations)
+        st3_settings = recipe._prepare_settings(
+            test_eggs_locations,
+            develop_eggs_locations
+        )
         self.assertNotIn('SublimeLinter', st3_settings)
 
     def test__write_project_file(self):
@@ -279,7 +290,12 @@ class TestRecipe(unittest.TestCase):
             '/tmp/eggs/egg2.egg'
         ]
 
-        st3_settings = recipe._prepare_settings(test_eggs_locations)
+        develop_eggs_locations = []
+
+        st3_settings = recipe._prepare_settings(
+            test_eggs_locations,
+            develop_eggs_locations
+        )
         recipe._write_project_file(
             os.path.join(self.location, _project_file),
             st3_settings,
@@ -316,7 +332,10 @@ class TestRecipe(unittest.TestCase):
         })
 
         recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
-        st3_settings = recipe._prepare_settings(test_eggs_locations)
+        st3_settings = recipe._prepare_settings(
+            test_eggs_locations,
+            develop_eggs_locations
+        )
 
         recipe._write_project_file(
             os.path.join(self.location, _project_file),
@@ -355,7 +374,10 @@ class TestRecipe(unittest.TestCase):
         })
 
         recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
-        st3_settings = recipe._prepare_settings(test_eggs_locations)
+        st3_settings = recipe._prepare_settings(
+            test_eggs_locations,
+            develop_eggs_locations
+        )
 
         recipe._write_project_file(
             os.path.join(self.location, _project_file),

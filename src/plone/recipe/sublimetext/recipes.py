@@ -258,8 +258,21 @@ class Recipe:
                 default_settings['SUBLIMELINTER_FLAKE8_DEFAULTS']
 
             if options['sublimelinter-flake8-executable']:
-                settings['SublimeLinter']['linters']['flake8']['executable'] =\
-                    options['sublimelinter-flake8-executable']
+                exc_path = options['sublimelinter-flake8-executable']
+                # Noramalized Path on demand
+                if exc_path.startswith('~'):
+                    exc_path = os.path.expanduser(exc_path)
+
+                elif exc_path.startswith('./'):
+                    exc_path = exc_path.replace('.', self.buildout['buildout']['directory'])
+
+                elif exc_path.startswith('${buildout:directory}'):
+                    exc_path = exc_path.replace('${buildout:directory}', self.buildout['buildout']['directory'])
+
+                elif exc_path.startswith('$project_path/'):
+                    exc_path = exc_path.replace('$project_path', self.buildout['buildout']['directory'])
+
+                settings['SublimeLinter']['linters']['flake8']['executable'] = exc_path
 
         # Now check for pylint
         if options['sublimelinter-pylint-enabled']:
@@ -276,7 +289,6 @@ class Recipe:
         This method is actual doing writting project file to file system."""
         try:
             if not overwrite and os.path.exists(project_file):
-
                 with open(project_file, 'r') as f:
                     # get comment cleaned (/* */) json string
                     json_string = json_comment.sub('', f.read().strip())

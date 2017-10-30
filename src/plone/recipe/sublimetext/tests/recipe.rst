@@ -110,11 +110,12 @@ Test merged works, existing settings kept intact::
     ... location = %(custom_location)s
     ... sublimelinter-enabled = True
     ... sublimelinter-flake8-enabled = True
-    ... sublimelinter-flake8-executable = /fake/path/flake8
+    ... sublimelinter-flake8-executable = ${buildout:directory}/bin/flake8
     ... """ % GLOBAL)
     >>> output = system(buildout + ' -c buildout.cfg').lower()
     >>> ST3_settings = json.loads(read(custom_location, 'plone-recipe-sublime.sublime-project'))
-    >>> ST3_settings['SublimeLinter']['linters']['flake8']['executable'] == '/fake/path/flake8'
+    >>> import os
+    >>> ST3_settings['SublimeLinter']['linters']['flake8']['executable'] == os.path.join(sample_buildout, 'bin', 'flake8')
     True
     >>> ST3_settings['SublimeLinter']['linters']['flake8']['@disable']
     False

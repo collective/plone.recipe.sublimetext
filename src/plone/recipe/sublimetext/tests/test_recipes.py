@@ -393,6 +393,81 @@ class TestRecipe(unittest.TestCase):
         # Should have two eggs paths in `extra_paths`
         self.assertEqual(len(generated_settings['settings']['extra_paths']), 2)
 
+    def test__prepare_sublinter_settings(self):
+        """Hence sublinter related tests allmost covered avobe, we are test here about
+        flake8 executable path by various contexts (i.e relative to user home or buildout/project path)"""
+        from ..recipes import Recipe
+        template_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+        with open(os.path.join(template_dir, 'template.json'), 'r') as f:
+            default_settings = json.load(f)
+
+        st3_settings = dict(settings=dict())
+        st3_settings.update(default_settings['ST3_DEFAULTS'])
+
+        buildout = self.buildout
+        recipe_options = self.recipe_options.copy()
+
+        buildout['sublimetext'] = recipe_options
+        recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
+
+        test_eggs_locations = [
+            '/tmp/eggs/egg1.egg',
+            '/tmp/eggs/egg2.egg'
+        ]
+
+        recipe_options['sublimelinter-enabled'] = 'True'
+        recipe_options['sublimelinter-pylint-enabled'] = 'True'
+        recipe_options['sublimelinter-flake8-enabled'] = 'True'
+        # Test relative user's home directory
+        recipe_options['sublimelinter-flake8-executable'] = '~/bin/flake8'
+
+        recipe._prepare_sublinter_settings(
+            st3_settings,
+            default_settings,
+            test_eggs_locations,
+            recipe_options
+        )
+        exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
+        # User's path should be expanded
+        self.assertTrue(os.path.isabs(exc_path))
+        self.assertEqual(exc_path, os.path.join(os.path.expanduser('~'), 'bin', 'flake8'))
+
+        # With buildout directory (buildout style)
+        recipe_options['sublimelinter-flake8-executable'] = '${buildout:directory}/bin/flake8'
+
+        recipe._prepare_sublinter_settings(
+            st3_settings,
+            default_settings,
+            test_eggs_locations,
+            recipe_options
+        )
+        exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
+        self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'flake8'))
+        # With project directory (sublimetext style)
+        recipe_options['sublimelinter-flake8-executable'] = '$project_path/bin/flake8'
+
+        recipe._prepare_sublinter_settings(
+            st3_settings,
+            default_settings,
+            test_eggs_locations,
+            recipe_options
+        )
+        exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
+        self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'flake8'))
+
+        # With current directory (relative to project file location)
+        recipe_options['sublimelinter-flake8-executable'] = './bin/flake8'
+
+        recipe._prepare_sublinter_settings(
+            st3_settings,
+            default_settings,
+            test_eggs_locations,
+            recipe_options
+        )
+        exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
+        self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'flake8'))
+
     def tearDown(self):
         os.chdir(self.here)
         rmtree.rmtree(self.location)

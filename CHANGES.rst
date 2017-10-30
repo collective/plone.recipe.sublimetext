@@ -4,7 +4,8 @@ Changelog
 1.1.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Flake8 executable path: Enable to use `buildout relative`/`user's home relative` path. Means now it is possible to use buildout, sublimetext style relative path.
+  [nazrulworld] 
 
 
 1.1.4 (2017-08-11)

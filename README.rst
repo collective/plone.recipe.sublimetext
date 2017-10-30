@@ -129,7 +129,12 @@ sublimelinter-flake8-executable
 
     Default: False
 
-    Project specific `Flake8`_ executable path, this will give you lots flexibility over using global `Flake8`_ executable, because each project might have separate `Python`_ version.
+    Project specific `Flake8`_ executable path, this will give you lots flexibility over using global `Flake8`_ executable, because each project might have separate `Python`_ version. You could use buildout or user's relative directory path and it is very convenient for collboration works where all members' absolute path of flake8 excecutable may not be the same!
+    Example of relative path usecase: 
+    i.) `${buildout:directory}/bin/flake8` 
+    ii.) `$project_path/bin/flake8` 
+    iii.) `./bin/flake8` 
+    iv.) `~/path/bin/flake8`
 
 anaconda-enabled
     Required: No

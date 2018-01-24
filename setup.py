@@ -28,7 +28,7 @@ entry_points = {
 
 setup(
     name='plone.recipe.sublimetext',
-    version='1.1.6',
+    version='1.1.7.dev0',
     description='SublimeText configuration for buildout-based Python projects',
     long_description=long_description,
     # Get more from https://pypi.python.org/pypi?%3Aaction=list_classifiers

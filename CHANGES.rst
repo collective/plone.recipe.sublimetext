@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.6 (unreleased)
+1.1.6 (2018-01-24)
 ------------------
 
 - Set a default folder_exclude_patterns for performance, and also to eliminate noise when looking up packages.

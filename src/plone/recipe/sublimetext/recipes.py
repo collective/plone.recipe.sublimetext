@@ -20,7 +20,28 @@ json_dump_params = {
 }
 json_load_params = {}
 
-default_st3_folders_settings = [{'path': '.'}]
+default_st3_folders_settings = [
+    {
+        'path': '.',
+        'follow_symlinks': 'true',
+        'folder_exclude_patterns': [
+            "bin",
+            "develop-eggs",
+            "eggs",
+            "include",
+            "lib",
+            "local",
+            "parts",
+            "var",
+            ".sass-cache",
+            ".yolk"
+        ]
+    },
+    {
+        'path': 'parts/omelette',
+        'follow_symlinks': 'true',
+    }
+]
 
 if PY2:
     json_dump_params['encoding'] = 'utf-8'

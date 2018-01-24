@@ -4,14 +4,17 @@ Changelog
 1.1.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Set a default folder_exclude_patterns for performance, and also to eliminate noise when looking up packages.
+- Set follow_symlinks to true.
+- split out omelette in own project folder setting, for being able to exclude 'parts'.
+  [sunew]
 
 
 1.1.5 (2017-10-31)
 ------------------
 
 - Flake8 executable path: Enable to use `buildout relative`/`user's home relative` path. Means now it is possible to use buildout, sublimetext style relative path.
-  [nazrulworld] 
+  [nazrulworld]
 
 
 1.1.4 (2017-08-11)

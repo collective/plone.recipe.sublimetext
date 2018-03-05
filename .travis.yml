@@ -26,8 +26,8 @@ script:
   - bin/code-analysis
   - bin/test
 after_success:
-  - bin/createcoverage run bin/test
-  - pip install coverage==4.4.1 coveralls==1.2.0
-  - coveralls
+  - travis_wait 30 bin/createcoverage run bin/test
+  - travis_wait 30 pip install coverage==4.4.1 coveralls==1.2.0
+  - travis_wait 30 coveralls
 after_failure:
   - bin/flake8 --version

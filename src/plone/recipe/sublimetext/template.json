@@ -9,14 +9,13 @@
         }
     ],
     "SUBLIMELINTER_DEFAULTS": {
-        "@python": 3,
         "linters": {}
     },
     "SUBLIMELINTER_FLAKE8_DEFAULTS": {
-        "@disable": false
+        "disable": false
     },
     "SUBLIMELINTER_PYLINTER_DEFAULTS": {
-        "@disable": false,
+        "disable": false,
         "paths": []
     },
     "JEDI_DEFAULTS": {

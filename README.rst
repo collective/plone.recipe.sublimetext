@@ -117,6 +117,18 @@ sublimelinter-pylint-enabled
 
      If you want to use `Sublimelinter-Pylint`_ or not; ``sublimelinter-enabled`` option will be respected, means if parent option is set as disabled but you enable this option will not work.
 
+sublimelinter-pylint-executable
+    Required: No
+
+    Default: ''
+
+    You could provide buildout specific pylint executable. It is very flexible way to avoid using global pylint.
+    Example of relative path usecase:
+    i.) `${buildout:directory}/bin/pylint`
+    ii.) `$project_path/bin/pylint`
+    iii.) `./bin/pylint`
+    iv.) `~/path/bin/pylint`
+
 sublimelinter-flake8-enabled
     Required: No
 
@@ -127,13 +139,13 @@ sublimelinter-flake8-enabled
 sublimelinter-flake8-executable
     Required: No
 
-    Default: False
+    Default: ''
 
     Project specific `Flake8`_ executable path, this will give you lots flexibility over using global `Flake8`_ executable, because each project might have separate `Python`_ version. You could use buildout or user's relative directory path and it is very convenient for collboration works where all members' absolute path of flake8 excecutable may not be the same!
-    Example of relative path usecase: 
-    i.) `${buildout:directory}/bin/flake8` 
-    ii.) `$project_path/bin/flake8` 
-    iii.) `./bin/flake8` 
+    Example of relative path usecase:
+    i.) `${buildout:directory}/bin/flake8`
+    ii.) `$project_path/bin/flake8`
+    iii.) `./bin/flake8`
     iv.) `~/path/bin/flake8`
 
 anaconda-enabled

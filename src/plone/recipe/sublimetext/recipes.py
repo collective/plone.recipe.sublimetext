@@ -183,6 +183,7 @@ class Recipe:
         )
         self.options.setdefault('sublimelinter-enabled', 'False')
         self.options.setdefault('sublimelinter-pylint-enabled', 'False')
+        self.options.setdefault('sublimelinter-pylint-executable', '')
         self.options.setdefault('sublimelinter-flake8-enabled', 'False')
         self.options.setdefault('sublimelinter-flake8-executable', '')
         self.options.setdefault('python-executable', str(sys.executable))
@@ -270,7 +271,6 @@ class Recipe:
         settings['settings'].update({'sublimelinter': True})
 
         settings['SublimeLinter'] = default_settings['SUBLIMELINTER_DEFAULTS']
-        settings['SublimeLinter']['@python'] = '{0}.{1}'.format(sys.version_info[0], sys.version_info[1])
 
         # Now check for flake8
         if options['sublimelinter-flake8-enabled']:
@@ -280,20 +280,8 @@ class Recipe:
 
             if options['sublimelinter-flake8-executable']:
                 exc_path = options['sublimelinter-flake8-executable']
-                # Noramalized Path on demand
-                if exc_path.startswith('~'):
-                    exc_path = os.path.expanduser(exc_path)
-
-                elif exc_path.startswith('./'):
-                    exc_path = exc_path.replace('.', self.buildout['buildout']['directory'])
-
-                elif exc_path.startswith('${buildout:directory}'):
-                    exc_path = exc_path.replace('${buildout:directory}', self.buildout['buildout']['directory'])
-
-                elif exc_path.startswith('$project_path/'):
-                    exc_path = exc_path.replace('$project_path', self.buildout['buildout']['directory'])
-
-                settings['SublimeLinter']['linters']['flake8']['executable'] = exc_path
+                settings['SublimeLinter']['linters']['flake8']['executable'] = \
+                    self._resolve_executable_path(exc_path)
 
         # Now check for pylint
         if options['sublimelinter-pylint-enabled']:
@@ -304,6 +292,10 @@ class Recipe:
                 'paths': eggs_locations,
 
             })
+            if options['sublimelinter-pylint-executable']:
+                exc_path = options['sublimelinter-pylint-executable']
+                settings['SublimeLinter']['linters']['pylint']['executable'] = \
+                    self._resolve_executable_path(exc_path)
 
     def _write_project_file(self, project_file, settings, overwrite=False):
         """Project File Writer:
@@ -348,6 +340,23 @@ class Recipe:
             except KeyError:
                 # New Item
                 existing_settings[key] = value
+
+    def _resolve_executable_path(self, path_):
+        """ """
+        # Noramalized Path on demand
+        if path_.startswith('~'):
+            path_ = os.path.expanduser(path_)
+
+        elif path_.startswith('./'):
+            path_ = path_.replace('.', self.buildout['buildout']['directory'])
+
+        elif path_.startswith('${buildout:directory}'):
+            path_ = path_.replace('${buildout:directory}', self.buildout['buildout']['directory'])
+
+        elif path_.startswith('$project_path/'):
+            path_ = path_.replace('$project_path', self.buildout['buildout']['directory'])
+
+        return path_
 
 
 def uninstall(name, options):

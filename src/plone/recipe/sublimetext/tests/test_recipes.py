@@ -224,7 +224,7 @@ class TestRecipe(unittest.TestCase):
         self.assertTrue(st3_settings['settings']['sublimelinter'])
         self.assertIn('SublimeLinter', st3_settings)
         self.assertEqual(test_eggs_locations, st3_settings['settings']['python_package_paths'])
-        self.assertFalse(st3_settings['SublimeLinter']['linters']['pylint']['@disable'])
+        self.assertFalse(st3_settings['SublimeLinter']['linters']['pylint']['disable'])
 
         # Test Anaconda Settings are avialable
         self.assertIn('build_systems', st3_settings)
@@ -309,7 +309,7 @@ class TestRecipe(unittest.TestCase):
         # Test:: merged works with new and existing
 
         # Make sure value changed from buildout
-        self.assertFalse(generated_settings['SublimeLinter']['linters']['flake8']['@disable'])
+        self.assertFalse(generated_settings['SublimeLinter']['linters']['flake8']['disable'])
         # Make sure other value kept intact, because that option is not handled by this recipe
         self.assertEqual(
             generated_settings['SublimeLinter']['linters']['flake8']['max-complexity'],
@@ -421,6 +421,7 @@ class TestRecipe(unittest.TestCase):
         recipe_options['sublimelinter-flake8-enabled'] = 'True'
         # Test relative user's home directory
         recipe_options['sublimelinter-flake8-executable'] = '~/bin/flake8'
+        recipe_options['sublimelinter-pylint-executable'] = '~/bin/pylint'
 
         recipe._prepare_sublinter_settings(
             st3_settings,
@@ -433,8 +434,14 @@ class TestRecipe(unittest.TestCase):
         self.assertTrue(os.path.isabs(exc_path))
         self.assertEqual(exc_path, os.path.join(os.path.expanduser('~'), 'bin', 'flake8'))
 
+        exc_path = st3_settings['SublimeLinter']['linters']['pylint']['executable']
+        # User's path should be expanded
+        self.assertTrue(os.path.isabs(exc_path))
+        self.assertEqual(exc_path, os.path.join(os.path.expanduser('~'), 'bin', 'pylint'))
+
         # With buildout directory (buildout style)
         recipe_options['sublimelinter-flake8-executable'] = '${buildout:directory}/bin/flake8'
+        recipe_options['sublimelinter-pylint-executable'] = '${buildout:directory}/bin/pylint'
 
         recipe._prepare_sublinter_settings(
             st3_settings,
@@ -444,8 +451,12 @@ class TestRecipe(unittest.TestCase):
         )
         exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
         self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'flake8'))
+
+        exc_path = st3_settings['SublimeLinter']['linters']['pylint']['executable']
+        self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'pylint'))
         # With project directory (sublimetext style)
         recipe_options['sublimelinter-flake8-executable'] = '$project_path/bin/flake8'
+        recipe_options['sublimelinter-pylint-executable'] = '$project_path/bin/pylint'
 
         recipe._prepare_sublinter_settings(
             st3_settings,
@@ -455,9 +466,13 @@ class TestRecipe(unittest.TestCase):
         )
         exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
         self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'flake8'))
+
+        exc_path = st3_settings['SublimeLinter']['linters']['pylint']['executable']
+        self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'pylint'))
 
         # With current directory (relative to project file location)
         recipe_options['sublimelinter-flake8-executable'] = './bin/flake8'
+        recipe_options['sublimelinter-pylint-executable'] = './bin/pylint'
 
         recipe._prepare_sublinter_settings(
             st3_settings,
@@ -467,6 +482,9 @@ class TestRecipe(unittest.TestCase):
         )
         exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
         self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'flake8'))
+
+        exc_path = st3_settings['SublimeLinter']['linters']['pylint']['executable']
+        self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'pylint'))
 
     def tearDown(self):
         os.chdir(self.here)

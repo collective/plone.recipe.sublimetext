@@ -45,7 +45,7 @@ Install sublimetext recipe with autocomplete path for eggs, some packages::
     True
     >>> 'SublimeLinter' in ST3_settings.keys()
     True
-    >>> ST3_settings['SublimeLinter']['linters']['pylint']['@disable']
+    >>> ST3_settings['SublimeLinter']['linters']['pylint']['disable']
     False
 
 SublimeText congiguration with all default options::
@@ -111,18 +111,23 @@ Test merged works, existing settings kept intact::
     ... sublimelinter-enabled = True
     ... sublimelinter-flake8-enabled = True
     ... sublimelinter-flake8-executable = ${buildout:directory}/bin/flake8
+    ... sublimelinter-pylint-enabled = True
+    ... sublimelinter-pylint-executable = ${buildout:directory}/bin/pylint
     ... """ % GLOBAL)
     >>> output = system(buildout + ' -c buildout.cfg').lower()
     >>> ST3_settings = json.loads(read(custom_location, 'plone-recipe-sublime.sublime-project'))
     >>> import os
     >>> ST3_settings['SublimeLinter']['linters']['flake8']['executable'] == os.path.join(sample_buildout, 'bin', 'flake8')
     True
-    >>> ST3_settings['SublimeLinter']['linters']['flake8']['@disable']
+    >>> ST3_settings['SublimeLinter']['linters']['pylint']['executable'] == os.path.join(sample_buildout, 'bin', 'pylint')
+    True
+    >>> ST3_settings['SublimeLinter']['linters']['flake8']['disable']
     False
     >>> ST3_settings['SublimeLinter']['linters']['flake8']['max-complexity']
     10
     >>> ST3_settings['folders'][0]['path'] == custom_location
     True
+    >>>
     >>> import shutil
     >>> shutil.rmtree(custom_location)
 

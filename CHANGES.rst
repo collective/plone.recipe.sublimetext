@@ -1,10 +1,13 @@
 Changelog
 =========
 
-1.1.7 (unreleased)
+1.2.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+New features:
+
+- (breaking) Sublime​Linter 4.x version support is added, that means older than version 4 might not working (although not tested.). If you face any problem, we suggest either you will update Sublime​Linter version or use older version of `plone.recipe.sublimetext` (1.1.6)
+- pylint executable path now can be provided.
 
 
 1.1.6 (2018-01-24)

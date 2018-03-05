@@ -38,7 +38,7 @@ class TestRecipe(unittest.TestCase):
         self.recipe_options = dict(
             recipe='plone.recipe.sublimetext',
             overwrite='False',
-            eggs='zc.recipe.egg\nzc.buildout'
+            eggs='zc.recipe.egg\nzc.buildout',
         )
         self.recipe_options['project-name'] = 'sublimetext-recipe'
 
@@ -52,14 +52,14 @@ class TestRecipe(unittest.TestCase):
             'jedi-enabled': '1',
             'sublimelinter-enabled': '1',
             'sublimelinter-pylint-enabled': 'True',
-            'anaconda-enabled': 'True'
+            'anaconda-enabled': 'True',
         })
         buildout['sublimetext'] = recipe_options
         recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
         recipe.install()
 
         generated_settings = json.loads(
-            read(os.path.join(self.location, recipe_options['project-name'] + '.sublime-project'))
+            read(os.path.join(self.location, recipe_options['project-name'] + '.sublime-project')),
         )
         # should be three, zc.buildout, zc,recipe.egg, python site-package path
         self.assertEqual(3, len(generated_settings['settings']['python_package_paths']))
@@ -67,13 +67,13 @@ class TestRecipe(unittest.TestCase):
         self.assertIsInstance(generated_settings['settings']['python_interpreter'], str_)
         self.assertIn(
             recipe.buildout['buildout']['directory'] + '/bin/python',
-            generated_settings['build_systems'][0]['shell_cmd']
+            generated_settings['build_systems'][0]['shell_cmd'],
         )
 
         # Test with custom location with package
         buildout['sublimetext'].update({
             'packages': '/fake/path',
-            'location': os.path.join(tempfile.gettempdir(), 'hshdshgdrts')
+            'location': os.path.join(tempfile.gettempdir(), 'hshdshgdrts'),
         })
 
         recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
@@ -82,8 +82,8 @@ class TestRecipe(unittest.TestCase):
         generated_settings = json.loads(
             read(os.path.join(
                 buildout['sublimetext']['location'],
-                recipe_options['project-name'] + '.sublime-project'
-            ))
+                recipe_options['project-name'] + '.sublime-project',
+            )),
         )
 
         # Now should four links
@@ -92,7 +92,7 @@ class TestRecipe(unittest.TestCase):
         # Make sure settings file is created at custom location
         self.assertTrue(os.path.exists(os.path.join(
             buildout['sublimetext']['location'],
-            buildout['sublimetext']['project-name'] + '.sublime-project'
+            buildout['sublimetext']['project-name'] + '.sublime-project',
         )))
 
         # restore
@@ -102,7 +102,7 @@ class TestRecipe(unittest.TestCase):
 
         # Test ignores
         buildout['buildout'].update({
-            'develop': '.'
+            'develop': '.',
         })
         buildout['sublimetext'].update({
             'ignores': 'zc.buildout',
@@ -112,7 +112,7 @@ class TestRecipe(unittest.TestCase):
         recipe.install()
 
         generated_settings = json.loads(
-            read(os.path.join(self.location, recipe_options['project-name'] + '.sublime-project'))
+            read(os.path.join(self.location, recipe_options['project-name'] + '.sublime-project')),
         )
 
         # should be two, zc.buildout is ignored
@@ -122,13 +122,13 @@ class TestRecipe(unittest.TestCase):
         write(
             self.location,
             recipe_options['project-name'] + '.sublime-project',
-            """I am invalid"""
+            """I am invalid""",
         )
         try:
             recipe.update()
             raise AssertionError(
                 'Code should not come here, as invalid json inside existing project'
-                'file! ValueError raised by UserError'
+                'file! ValueError raised by UserError',
             )
         except UserError:
             pass
@@ -136,7 +136,7 @@ class TestRecipe(unittest.TestCase):
         # Failed Test: exception rasied by zc.recipe.Egg
         recipe.options.update({
             # Invalid Egg
-            'eggs': '\\'
+            'eggs': '\\',
         })
         try:
             recipe.install()
@@ -159,7 +159,7 @@ class TestRecipe(unittest.TestCase):
         # Test: default project name should be buildout directory name
         self.assertEqual(
             recipe.options['project-name'],
-            self.location.split('/')[-1]
+            self.location.split('/')[-1],
         )
 
         # Test: if any ``sublime-project`` suffix file is available inside buildout directory
@@ -186,14 +186,14 @@ class TestRecipe(unittest.TestCase):
 
         test_eggs_locations = [
             '/tmp/eggs/egg1.egg',
-            '/tmp/eggs/egg2.egg'
+            '/tmp/eggs/egg2.egg',
         ]
 
         develop_eggs_locations = []
 
         st3_settings = recipe._prepare_settings(
             test_eggs_locations,
-            develop_eggs_locations
+            develop_eggs_locations,
         )
 
         # By Default Sublimelinter is not enabled
@@ -218,7 +218,7 @@ class TestRecipe(unittest.TestCase):
         recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
         st3_settings = recipe._prepare_settings(
             test_eggs_locations,
-            develop_eggs_locations
+            develop_eggs_locations,
         )
 
         self.assertTrue(st3_settings['settings']['sublimelinter'])
@@ -240,7 +240,7 @@ class TestRecipe(unittest.TestCase):
         recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
         st3_settings = recipe._prepare_settings(
             test_eggs_locations,
-            develop_eggs_locations
+            develop_eggs_locations,
         )
         self.assertNotIn('SublimeLinter', st3_settings)
 
@@ -254,7 +254,7 @@ class TestRecipe(unittest.TestCase):
         del recipe_options['overwrite']
         recipe_options.update({
             'sublimelinter-enabled': 'True',
-            'sublimelinter-flake8-enabled': 'True'
+            'sublimelinter-flake8-enabled': 'True',
         })
 
         _project_file = 'human_project.sublime-project'
@@ -277,7 +277,7 @@ class TestRecipe(unittest.TestCase):
                     }
                 }
 
-            }"""
+            }""",
         )
 
         buildout['sublimetext'] = recipe_options
@@ -287,19 +287,19 @@ class TestRecipe(unittest.TestCase):
 
         test_eggs_locations = [
             '/tmp/eggs/egg1.egg',
-            '/tmp/eggs/egg2.egg'
+            '/tmp/eggs/egg2.egg',
         ]
 
         develop_eggs_locations = []
 
         st3_settings = recipe._prepare_settings(
             test_eggs_locations,
-            develop_eggs_locations
+            develop_eggs_locations,
         )
         recipe._write_project_file(
             os.path.join(self.location, _project_file),
             st3_settings,
-            False
+            False,
         )
         # By default no overwrite configuration, means existing configuration should be
         # available
@@ -313,12 +313,12 @@ class TestRecipe(unittest.TestCase):
         # Make sure other value kept intact, because that option is not handled by this recipe
         self.assertEqual(
             generated_settings['SublimeLinter']['linters']['flake8']['max-complexity'],
-            10
+            10,
         )
         # Test:: default folders option is added, because existing file don't have this
         self.assertEqual(
             generated_settings['folders'],
-            default_st3_folders_settings
+            default_st3_folders_settings,
         )
 
         # Test: existing configuration is kept intact
@@ -328,19 +328,19 @@ class TestRecipe(unittest.TestCase):
             'sublimelinter-enabled': 'True',
             'sublimelinter-flake8-enabled': 'False',
             'sublimelinter-pylint-enabled': 'True',
-            'jedi-enabled': 'True'
+            'jedi-enabled': 'True',
         })
 
         recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
         st3_settings = recipe._prepare_settings(
             test_eggs_locations,
-            develop_eggs_locations
+            develop_eggs_locations,
         )
 
         recipe._write_project_file(
             os.path.join(self.location, _project_file),
             st3_settings,
-            False
+            False,
         )
 
         generated_settings = json.loads(read(os.path.join(self.location, _project_file)))
@@ -355,7 +355,7 @@ class TestRecipe(unittest.TestCase):
         recipe._write_project_file(
             os.path.join(self.location, _project_file),
             st3_settings,
-            True
+            True,
         )
         generated_settings = json.loads(read(os.path.join(self.location, _project_file)))
         self.assertNotIn('tests', generated_settings)
@@ -363,26 +363,26 @@ class TestRecipe(unittest.TestCase):
         # As completly overwrite file, so there is no folders option, so should have default
         self.assertEqual(
             generated_settings['folders'],
-            default_st3_folders_settings
+            default_st3_folders_settings,
         )
 
         # Test: Anaconda Settings is working
 
         buildout['sublimetext'].update({
             'anaconda-enabled': 'True',
-            'anaconda-pep8-ignores': 'N802 W291'
+            'anaconda-pep8-ignores': 'N802 W291',
         })
 
         recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
         st3_settings = recipe._prepare_settings(
             test_eggs_locations,
-            develop_eggs_locations
+            develop_eggs_locations,
         )
 
         recipe._write_project_file(
             os.path.join(self.location, _project_file),
             st3_settings,
-            True
+            True,
         )
 
         generated_settings = json.loads(read(os.path.join(self.location, _project_file)))
@@ -413,7 +413,7 @@ class TestRecipe(unittest.TestCase):
 
         test_eggs_locations = [
             '/tmp/eggs/egg1.egg',
-            '/tmp/eggs/egg2.egg'
+            '/tmp/eggs/egg2.egg',
         ]
 
         recipe_options['sublimelinter-enabled'] = 'True'
@@ -426,7 +426,7 @@ class TestRecipe(unittest.TestCase):
             st3_settings,
             default_settings,
             test_eggs_locations,
-            recipe_options
+            recipe_options,
         )
         exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
         # User's path should be expanded
@@ -440,7 +440,7 @@ class TestRecipe(unittest.TestCase):
             st3_settings,
             default_settings,
             test_eggs_locations,
-            recipe_options
+            recipe_options,
         )
         exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
         self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'flake8'))
@@ -451,7 +451,7 @@ class TestRecipe(unittest.TestCase):
             st3_settings,
             default_settings,
             test_eggs_locations,
-            recipe_options
+            recipe_options,
         )
         exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
         self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'flake8'))
@@ -463,7 +463,7 @@ class TestRecipe(unittest.TestCase):
             st3_settings,
             default_settings,
             test_eggs_locations,
-            recipe_options
+            recipe_options,
         )
         exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
         self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'flake8'))
@@ -488,7 +488,7 @@ class TestRecipeUninstall(unittest.TestCase):
 
         self.recipe_options = dict(
             recipe='plone.recipe.sublimetext',
-            overwrite='False'
+            overwrite='False',
         )
         self.recipe_options['project-name'] = 'sublimetext-recipe'
 
@@ -508,7 +508,7 @@ class TestRecipeUninstall(unittest.TestCase):
         write(
             self.location,
             filename,
-            '{"hello": "T20"}'
+            '{"hello": "T20"}',
         )
         uninstall(recipe.name, recipe.options)
 

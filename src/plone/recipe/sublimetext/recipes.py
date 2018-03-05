@@ -16,7 +16,7 @@ json_comment = re.compile(r'/\*.*?\*/', re.DOTALL | re.MULTILINE)
 json_dump_params = {
     'sort_keys': True,
     'indent': 4,
-    'separators': (',', ':')
+    'separators': (',', ':'),
 }
 json_load_params = {}
 
@@ -25,22 +25,22 @@ default_st3_folders_settings = [
         'path': '.',
         'follow_symlinks': 'true',
         'folder_exclude_patterns': [
-            "bin",
-            "develop-eggs",
-            "eggs",
-            "include",
-            "lib",
-            "local",
-            "parts",
-            "var",
-            ".sass-cache",
-            ".yolk"
-        ]
+            'bin',
+            'develop-eggs',
+            'eggs',
+            'include',
+            'lib',
+            'local',
+            'parts',
+            'var',
+            '.sass-cache',
+            '.yolk',
+        ],
     },
     {
         'path': 'parts/omelette',
         'follow_symlinks': 'true',
-    }
+    },
 ]
 
 if PY2:
@@ -113,7 +113,7 @@ class Recipe:
         st3_settings = self._prepare_settings(list(eggs_locations), list(develop_eggs_locations))
         project_file = os.path.join(
             options['location'],
-            options['project-name'] + '.sublime-project'
+            options['project-name'] + '.sublime-project',
         )
 
         self._write_project_file(project_file, st3_settings, options['overwrite'])
@@ -179,7 +179,7 @@ class Recipe:
         self.options.setdefault('jedi-enabled', 'False')
         self.options.setdefault('jedi-use-omelette', 'False')
         self.options.setdefault('omelette-location', os.path.join(
-            self.buildout['buildout']['parts-directory'], 'omelette')
+            self.buildout['buildout']['parts-directory'], 'omelette'),
         )
         self.options.setdefault('sublimelinter-enabled', 'False')
         self.options.setdefault('sublimelinter-pylint-enabled', 'False')
@@ -219,14 +219,14 @@ class Recipe:
                 # navigate to the location in the project, syncing the toolbar, and
                 # inspecting the full module not just the individual file.
                 settings['settings'].update({
-                    'python_package_paths': [options['omelette-location']] + develop_eggs_locations
+                    'python_package_paths': [options['omelette-location']] + develop_eggs_locations,
                 })
             else:
                 # Add the paths of all eggs to the jedi list, using the absolute
                 # location of the eggs (which usually is at the buildout eggs cache,
                 # outside of the project).
                 settings['settings'].update({
-                    'python_package_paths': eggs_locations
+                    'python_package_paths': eggs_locations,
                 })
 
         if options['sublimelinter-enabled']:
@@ -247,7 +247,7 @@ class Recipe:
 
         settings['build_systems'][0].update({
             'shell_cmd': '{project_path}/bin/python -u "$file"'.format(
-                project_path=self.buildout['buildout']['directory'])
+                project_path=self.buildout['buildout']['directory']),
         })
 
         settings['settings'].update(default_anaconda_settings['settings'])
@@ -257,11 +257,11 @@ class Recipe:
             'disable_anaconda_completion': not options['anaconda-completion-enabled'],
             'anaconda_linting': options['anaconda-linting-enabled'],
             'use_pylint': options['anaconda-pylint-enabled'],
-            'extra_paths': eggs_locations
+            'extra_paths': eggs_locations,
         })
         if options['anaconda-pep8-ignores']:
             settings['settings'].update({
-                'pep8_ignore': options['anaconda-pep8-ignores'].split()
+                'pep8_ignore': options['anaconda-pep8-ignores'].split(),
             })
 
     def _prepare_sublinter_settings(self, settings, default_settings, eggs_locations, options):
@@ -301,7 +301,7 @@ class Recipe:
                 default_settings['SUBLIMELINTER_PYLINTER_DEFAULTS']
 
             settings['SublimeLinter']['linters']['pylint'].update({
-                'paths': eggs_locations
+                'paths': eggs_locations,
 
             })
 

@@ -75,7 +75,7 @@ class Recipe:
         self.packages = [
             l.strip()
             for l in self.options['packages'].splitlines()
-            if l.strip()]
+            if l and l.strip()]
 
     def install(self):
         """Let's build sublimetext project file:
@@ -140,6 +140,16 @@ class Recipe:
             ('yes', 'true', 'on', '1', 'sure')
         options['sublimelinter-flake8-enabled'] = self.options['sublimelinter-flake8-enabled'].lower() in\
             ('yes', 'true', 'on', '1', 'sure')
+        # Parse linter arguments
+        if 'sublimelinter-pylint-args' in self.options:
+            args = self._normalize_linter_args(self.options['sublimelinter-pylint-args'])
+            if args:
+                options['sublimelinter-pylint-args'] = args
+
+        if 'sublimelinter-flake8-args' in self.options:
+            args = self._normalize_linter_args(self.options['sublimelinter-flake8-args'])
+            if args:
+                options['sublimelinter-flake8-args'] = args
 
         # Anaconda settings
         options['anaconda-enabled'] = self.options['anaconda-enabled'].lower() in\
@@ -154,6 +164,27 @@ class Recipe:
             ('yes', 'true', 'on', '1', 'sure')
 
         return options
+
+    def _normalize_linter_args(self, args_lines):
+        """ """
+        args = list()
+        for arg_line in args_lines.splitlines():
+            if not arg_line or (arg_line and not arg_line.strip()):
+                continue
+            for arg in arg_line.split(' '):
+                if not arg or (arg and not arg.strip()):
+                    continue
+                parts = arg.strip().split('=')
+                try:
+                    arg = parts[0]
+                    arg = '{0}={1}'.format(arg, parts[1])
+                except IndexError:
+                    pass
+                if not arg.startswith('--'):
+                    arg = '--' + arg
+                args.append(arg)
+
+        return args
 
     def _set_defaults(self):
         """This is setting default values of all possible options"""
@@ -290,6 +321,10 @@ class Recipe:
                 sublinter_settings[linter_tpl.format(linter='flake8', attribute='executable')] = \
                     self._resolve_executable_path(exc_path)
 
+            if 'sublimelinter-flake8-args' in options:
+                sublinter_settings[linter_tpl.format(linter='flake8', attribute='args')] = \
+                    options['sublimelinter-flake8-args']
+
         # Now check for pylint
         if options['sublimelinter-pylint-enabled']:
 
@@ -303,6 +338,10 @@ class Recipe:
                 exc_path = options['sublimelinter-pylint-executable']
                 sublinter_settings[linter_tpl.format(linter='pylint', attribute='executable')] = \
                     self._resolve_executable_path(exc_path)
+
+            if 'sublimelinter-pylint-args' in options:
+                sublinter_settings[linter_tpl.format(linter='pylint', attribute='args')] = \
+                    options['sublimelinter-pylint-args']
 
         settings['settings'].update(sublinter_settings)
 

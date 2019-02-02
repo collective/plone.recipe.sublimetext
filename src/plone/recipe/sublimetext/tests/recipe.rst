@@ -85,10 +85,9 @@ Test merged works, existing settings kept intact::
     ... """
     ... {
     ...     "folders": [{"path": "%(custom_location)s"}],
-    ...     "SublimeLinter": {
-    ...         "linters": {
-    ...             "flake8": {"@disable": true, "max-complexity": 10}
-    ...         }
+    ...     "settings": {
+    ...         "SublimeLinter.linters.flake8.disable": true,
+    ...         "SublimeLinter.linters.flake8.args": ["--max-complexity=10"]
     ...      }
     ... }
     ... """ % {'custom_location': custom_location})
@@ -122,8 +121,8 @@ Test merged works, existing settings kept intact::
     True
     >>> ST3_settings['settings']['SublimeLinter.linters.flake8.disable']
     False
-    >>> ST3_settings['SublimeLinter']['linters']['flake8']['max-complexity']
-    10
+    >>> ST3_settings['settings']['SublimeLinter.linters.flake8.args'] == ['--max-complexity=10']
+    True
     >>> ST3_settings['folders'][0]['path'] == custom_location
     True
     >>>
@@ -166,4 +165,41 @@ Anaconda Settings Tests with default options::
     >>> 'SublimeLinter' not in ST3_settings.keys()
     True
     >>> 'python_package_paths' not in ST3_settings['settings'].keys()
+    True
+
+
+Sublimelinter Linter Settings Tests with args::
+
+    >>> write(sample_buildout, 'buildout.cfg',
+    ... """
+    ... [buildout]
+    ... develop =
+    ...     %(test_dir)s/develop/sublimtexttest_pkg1
+    ... eggs =
+    ...     sublimtexttest_pkg1
+    ...     zc.recipe.egg
+    ...     zc.buildout
+    ... parts = sublimetext
+    ...
+    ... [sublimetext]
+    ... recipe = plone.recipe.sublimetext
+    ... packages = %(test_dir)s/Products
+    ... project-name = plone-recipe-sublime
+    ... eggs = ${buildout:eggs}
+    ... sublimelinter-enabled = 1
+    ... sublimelinter-pylint-enabled = True
+    ... sublimelinter-pylint-args =  disable=all
+    ... sublimelinter-flake8-enabled = 1
+    ... sublimelinter-flake8-args =  max-complexity=10  max-line-length=119
+    ...     exclude=docs,*.egg.,omelette
+    ... """ % globals())
+
+    >>> output_lower = system(buildout + ' -c buildout.cfg').lower()
+    >>> ST3_settings = json.loads(read(sample_buildout, 'plone-recipe-sublime.sublime-project'))
+    >>> len(ST3_settings['settings']['SublimeLinter.linters.flake8.args']) == 3
+    True
+    >>> ST3_settings['settings']['SublimeLinter.linters.flake8.args'] == \
+    ...  ['--max-complexity=10', '--max-line-length=119', '--exclude=docs,*.egg.,omelette']
+    True
+    >>> len(ST3_settings['settings']['SublimeLinter.linters.pylint.args']) == 1
     True

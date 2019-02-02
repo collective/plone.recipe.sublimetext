@@ -272,13 +272,9 @@ class TestRecipe(unittest.TestCase):
                 "tests": {
                     "hello": 1
                 },
-                "SublimeLinter": {
-                    "linters": {
-                        "flake8": {
-                            "@disable": true,
-                            "max-complexity": 10
-                        }
-                    }
+                "settings": {
+                    "SublimeLinter.linters.flake8.disable": true,
+                    "SublimeLinter.linters.flake8.args": ["--max-complexity=10"]
                 }
 
             }""",
@@ -315,9 +311,8 @@ class TestRecipe(unittest.TestCase):
         self.assertFalse(generated_settings['settings']['SublimeLinter.linters.flake8.disable'])
         # Make sure other value kept intact, because that option is not handled by this recipe
         self.assertEqual(
-            generated_settings['SublimeLinter']['linters']['flake8']['max-complexity'],
-            10,
-        )
+            generated_settings['settings']['SublimeLinter.linters.flake8.args'],
+            ['--max-complexity=10'])
         # Test:: default folders option is added, because existing file don't have this
         self.assertEqual(
             generated_settings['folders'],
@@ -487,6 +482,40 @@ class TestRecipe(unittest.TestCase):
 
         exc_path = st3_settings['settings']['SublimeLinter.linters.pylint.executable']
         self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'pylint'))
+
+    def test_sublimelinter_linter_settings(self):
+        """ """
+        from ..recipes import Recipe
+
+        buildout = self.buildout
+        recipe_options = self.recipe_options.copy()
+        recipe_options.update({
+            'sublimelinter-enabled': '1',
+            'sublimelinter-pylint-enabled': 'True',
+            'sublimelinter-pylint-args': 'disable=all ',
+            'sublimelinter-flake8-enabled': '1',
+            'sublimelinter-flake8-args': 'max-complexity=10  max-line-length=119\n'
+            '   exclude=docs,*.egg.,omelette',
+        })
+        buildout['sublimetext'] = recipe_options
+        recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
+        recipe.install()
+
+        generated_settings = json.loads(
+            read(os.path.join(self.location, recipe_options['project-name'] + '.sublime-project')),
+        )
+        # should be three
+        self.assertEqual(
+            3,
+            len(generated_settings['settings']['SublimeLinter.linters.flake8.args']))
+        # make sure -- prefix is added
+        self.assertEqual(
+            generated_settings['settings']['SublimeLinter.linters.flake8.args'],
+            ['--max-complexity=10', '--max-line-length=119', '--exclude=docs,*.egg.,omelette'])
+
+        self.assertEqual(
+            1,
+            len(generated_settings['settings']['SublimeLinter.linters.pylint.args']))
 
     def tearDown(self):
         os.chdir(self.here)

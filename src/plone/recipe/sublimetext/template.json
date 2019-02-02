@@ -1,23 +1,9 @@
 {
-    "ST3_DEFAULTS": {
-        "sublimelinter": false,
-        "python_interpreter": "$project_path/bin/python"
-    },
     "ST3_FOLDER_OPTIONS": [
         {
             "path": "."
         }
     ],
-    "SUBLIMELINTER_DEFAULTS": {
-        "linters": {}
-    },
-    "SUBLIMELINTER_FLAKE8_DEFAULTS": {
-        "disable": false
-    },
-    "SUBLIMELINTER_PYLINTER_DEFAULTS": {
-        "disable": false,
-        "paths": []
-    },
     "JEDI_DEFAULTS": {
         "python_package_paths": []
     },

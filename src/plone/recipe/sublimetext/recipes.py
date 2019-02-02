@@ -159,6 +159,12 @@ class Recipe:
         """This is setting default values of all possible options"""
 
         self.options.setdefault('location', self.buildout['buildout']['directory'])
+        self.options.setdefault('python-executable', str(sys.executable))
+        if getattr(sys, 'real_prefix', None):
+            # Python running under virtualenv
+            self.options.setdefault(
+                'python-virtualenv',
+                os.path.dirname(os.path.dirname(self.options['python-executable'])))
 
         def guess_project_name():
 
@@ -186,7 +192,6 @@ class Recipe:
         self.options.setdefault('sublimelinter-pylint-executable', '')
         self.options.setdefault('sublimelinter-flake8-enabled', 'False')
         self.options.setdefault('sublimelinter-flake8-executable', '')
-        self.options.setdefault('python-executable', str(sys.executable))
 
         self.options.setdefault('ignore-develop', 'False')
         self.options.setdefault('ignores', '')
@@ -208,8 +213,11 @@ class Recipe:
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'template.json'), 'r') as f:
             default_settings = json.load(f, **json_load_params)
 
-        settings['settings'] = default_settings['ST3_DEFAULTS']
-        settings['settings']['python_interpreter'] = options['python-executable']
+        settings['settings']['python_interpreter'] = \
+            self._resolve_executable_path(options['python-executable'])
+
+        if 'python-virtualenv' in options:
+            settings['settings']['python_virtualenv'] = options['python-virtualenv']
 
         if options['jedi-enabled']:
 
@@ -267,35 +275,36 @@ class Recipe:
 
     def _prepare_sublinter_settings(self, settings, default_settings, eggs_locations, options):
         """All sublinter related settings are done by this method."""
-
-        settings['settings'].update({'sublimelinter': True})
-
-        settings['SublimeLinter'] = default_settings['SUBLIMELINTER_DEFAULTS']
-
+        linter_tpl = 'SublimeLinter.linters.{linter}.{attribute}'
+        sublinter_settings = {}
         # Now check for flake8
         if options['sublimelinter-flake8-enabled']:
 
-            settings['SublimeLinter']['linters']['flake8'] =\
-                default_settings['SUBLIMELINTER_FLAKE8_DEFAULTS']
+            sublinter_settings[linter_tpl.format(linter='flake8', attribute='disable')] = False
+
+            sublinter_settings[linter_tpl.format(linter='flake8', attribute='python')] = \
+                settings['settings']['python_interpreter']
 
             if options['sublimelinter-flake8-executable']:
                 exc_path = options['sublimelinter-flake8-executable']
-                settings['SublimeLinter']['linters']['flake8']['executable'] = \
+                sublinter_settings[linter_tpl.format(linter='flake8', attribute='executable')] = \
                     self._resolve_executable_path(exc_path)
 
         # Now check for pylint
         if options['sublimelinter-pylint-enabled']:
-            settings['SublimeLinter']['linters']['pylint'] =\
-                default_settings['SUBLIMELINTER_PYLINTER_DEFAULTS']
 
-            settings['SublimeLinter']['linters']['pylint'].update({
-                'paths': eggs_locations,
+            sublinter_settings[linter_tpl.format(linter='pylint', attribute='disable')] = False
+            sublinter_settings[linter_tpl.format(linter='pylint', attribute='python')] = \
+                settings['settings']['python_interpreter']
 
-            })
+            sublinter_settings[linter_tpl.format(linter='pylint', attribute='paths')] = eggs_locations
+
             if options['sublimelinter-pylint-executable']:
                 exc_path = options['sublimelinter-pylint-executable']
-                settings['SublimeLinter']['linters']['pylint']['executable'] = \
+                sublinter_settings[linter_tpl.format(linter='pylint', attribute='executable')] = \
                     self._resolve_executable_path(exc_path)
+
+        settings['settings'].update(sublinter_settings)
 
     def _write_project_file(self, project_file, settings, overwrite=False):
         """Project File Writer:

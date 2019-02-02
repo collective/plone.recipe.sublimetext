@@ -43,9 +43,9 @@ Install sublimetext recipe with autocomplete path for eggs, some packages::
     >>> ST3_settings = json.loads(read(sample_buildout, 'plone-recipe-sublime.sublime-project'))
     >>> len(ST3_settings['settings']['python_package_paths']) == 5
     True
-    >>> 'SublimeLinter' in ST3_settings.keys()
+    >>> 'SublimeLinter.linters.pylint.disable' in ST3_settings['settings'].keys()
     True
-    >>> ST3_settings['SublimeLinter']['linters']['pylint']['disable']
+    >>> ST3_settings['settings']['SublimeLinter.linters.pylint.disable']
     False
 
 SublimeText congiguration with all default options::
@@ -65,10 +65,9 @@ SublimeText congiguration with all default options::
     ... """ % globals())
     >>> output = system(buildout + ' -c buildout.cfg').lower()
     >>> ST3_settings = json.loads(read(sample_buildout, 'plone-recipe-sublime.sublime-project'))
-    >>> 'SublimeLinter' not in ST3_settings.keys()
+    >>> s_linters = [l for l in ST3_settings['settings'].keys() if l.startswith('SublimeLinter')]
+    >>> len(s_linters) == 0
     True
-    >>> ST3_settings['settings']['sublimelinter']
-    False
     >>> 'python_package_paths' not in ST3_settings['settings'].keys()
     True
     >>> ST3_settings['folders'][0]['path'] == '.'
@@ -117,11 +116,11 @@ Test merged works, existing settings kept intact::
     >>> output = system(buildout + ' -c buildout.cfg').lower()
     >>> ST3_settings = json.loads(read(custom_location, 'plone-recipe-sublime.sublime-project'))
     >>> import os
-    >>> ST3_settings['SublimeLinter']['linters']['flake8']['executable'] == os.path.join(sample_buildout, 'bin', 'flake8')
+    >>> ST3_settings['settings']['SublimeLinter.linters.flake8.executable'] == os.path.join(sample_buildout, 'bin', 'flake8')
     True
-    >>> ST3_settings['SublimeLinter']['linters']['pylint']['executable'] == os.path.join(sample_buildout, 'bin', 'pylint')
+    >>> ST3_settings['settings']['SublimeLinter.linters.pylint.executable'] == os.path.join(sample_buildout, 'bin', 'pylint')
     True
-    >>> ST3_settings['SublimeLinter']['linters']['flake8']['disable']
+    >>> ST3_settings['settings']['SublimeLinter.linters.flake8.disable']
     False
     >>> ST3_settings['SublimeLinter']['linters']['flake8']['max-complexity']
     10

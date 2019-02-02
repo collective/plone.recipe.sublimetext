@@ -1,10 +1,10 @@
 Changelog
 =========
 
-1.2.1 (unreleased)
+1.3.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- `New style Sublime​Linter linter settings <http://www.sublimelinter.com/en/stable/settings.html#project-settings>`_ generation has been added. [nazrulworld]
 
 
 1.2.0 (2018-03-05)

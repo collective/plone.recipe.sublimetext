@@ -8,6 +8,7 @@ from zc.buildout.testing import write
 
 import json
 import os
+import sys
 import tempfile
 import unittest
 
@@ -197,8 +198,9 @@ class TestRecipe(unittest.TestCase):
         )
 
         # By Default Sublimelinter is not enabled
-        self.assertFalse(st3_settings['settings']['sublimelinter'])
-        self.assertNotIn('SublimeLinter', st3_settings)
+        # No linter setting should be available
+        s_linters = [l for l in st3_settings['settings'].keys() if l.startswith('SublimeLinter')]
+        self.assertEqual(len(s_linters), 0)
 
         # Anaconda is not enabled as well
         self.assertNotIn('build_systems', st3_settings)
@@ -221,10 +223,12 @@ class TestRecipe(unittest.TestCase):
             develop_eggs_locations,
         )
 
-        self.assertTrue(st3_settings['settings']['sublimelinter'])
-        self.assertIn('SublimeLinter', st3_settings)
+        s_linters = [l for l in st3_settings['settings'].keys() if l.startswith('SublimeLinter')]
+        # two extra option with SublimeLinter.linters.{linter}.python
+        self.assertEqual(len(s_linters), 6)
+
         self.assertEqual(test_eggs_locations, st3_settings['settings']['python_package_paths'])
-        self.assertFalse(st3_settings['SublimeLinter']['linters']['pylint']['disable'])
+        self.assertFalse(st3_settings['settings']['SublimeLinter.linters.pylint.disable'])
 
         # Test Anaconda Settings are avialable
         self.assertIn('build_systems', st3_settings)
@@ -304,12 +308,11 @@ class TestRecipe(unittest.TestCase):
         # By default no overwrite configuration, means existing configuration should be
         # available
         generated_settings = json.loads(read(os.path.join(self.location, _project_file)))
-        default_settings = json.loads(read(JSON_TEMPLATE))
 
         # Test:: merged works with new and existing
 
         # Make sure value changed from buildout
-        self.assertFalse(generated_settings['SublimeLinter']['linters']['flake8']['disable'])
+        self.assertFalse(generated_settings['settings']['SublimeLinter.linters.flake8.disable'])
         # Make sure other value kept intact, because that option is not handled by this recipe
         self.assertEqual(
             generated_settings['SublimeLinter']['linters']['flake8']['max-complexity'],
@@ -345,11 +348,9 @@ class TestRecipe(unittest.TestCase):
 
         generated_settings = json.loads(read(os.path.join(self.location, _project_file)))
 
-        self.assertNotEqual(generated_settings['settings'], default_settings['ST3_DEFAULTS'])
         self.assertEqual(test_eggs_locations, generated_settings['settings']['python_package_paths'])
-        self.assertIn('SublimeLinter', generated_settings)
         # Test paths are added for `pylint`
-        self.assertEqual(2, len(generated_settings['SublimeLinter']['linters']['pylint']['paths']))
+        self.assertEqual(2, len(generated_settings['settings']['SublimeLinter.linters.pylint.paths']))
 
         # Test: overwrite works!
         recipe._write_project_file(
@@ -403,7 +404,8 @@ class TestRecipe(unittest.TestCase):
             default_settings = json.load(f)
 
         st3_settings = dict(settings=dict())
-        st3_settings.update(default_settings['ST3_DEFAULTS'])
+        st3_settings['settings']['python_interpreter'] = str(sys.executable)
+        st3_settings['settings']['python_virtualenv'] = os.path.dirname(os.path.dirname(str(sys.executable)))
 
         buildout = self.buildout
         recipe_options = self.recipe_options.copy()
@@ -429,12 +431,12 @@ class TestRecipe(unittest.TestCase):
             test_eggs_locations,
             recipe_options,
         )
-        exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
+        exc_path = st3_settings['settings']['SublimeLinter.linters.flake8.executable']
         # User's path should be expanded
         self.assertTrue(os.path.isabs(exc_path))
         self.assertEqual(exc_path, os.path.join(os.path.expanduser('~'), 'bin', 'flake8'))
 
-        exc_path = st3_settings['SublimeLinter']['linters']['pylint']['executable']
+        exc_path = st3_settings['settings']['SublimeLinter.linters.pylint.executable']
         # User's path should be expanded
         self.assertTrue(os.path.isabs(exc_path))
         self.assertEqual(exc_path, os.path.join(os.path.expanduser('~'), 'bin', 'pylint'))
@@ -449,10 +451,10 @@ class TestRecipe(unittest.TestCase):
             test_eggs_locations,
             recipe_options,
         )
-        exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
+        exc_path = st3_settings['settings']['SublimeLinter.linters.flake8.executable']
         self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'flake8'))
 
-        exc_path = st3_settings['SublimeLinter']['linters']['pylint']['executable']
+        exc_path = st3_settings['settings']['SublimeLinter.linters.pylint.executable']
         self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'pylint'))
         # With project directory (sublimetext style)
         recipe_options['sublimelinter-flake8-executable'] = '$project_path/bin/flake8'
@@ -464,10 +466,10 @@ class TestRecipe(unittest.TestCase):
             test_eggs_locations,
             recipe_options,
         )
-        exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
+        exc_path = st3_settings['settings']['SublimeLinter.linters.flake8.executable']
         self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'flake8'))
 
-        exc_path = st3_settings['SublimeLinter']['linters']['pylint']['executable']
+        exc_path = st3_settings['settings']['SublimeLinter.linters.pylint.executable']
         self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'pylint'))
 
         # With current directory (relative to project file location)
@@ -480,10 +482,10 @@ class TestRecipe(unittest.TestCase):
             test_eggs_locations,
             recipe_options,
         )
-        exc_path = st3_settings['SublimeLinter']['linters']['flake8']['executable']
+        exc_path = st3_settings['settings']['SublimeLinter.linters.flake8.executable']
         self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'flake8'))
 
-        exc_path = st3_settings['SublimeLinter']['linters']['pylint']['executable']
+        exc_path = st3_settings['settings']['SublimeLinter.linters.pylint.executable']
         self.assertEqual(exc_path, os.path.join(buildout['buildout']['directory'], 'bin', 'pylint'))
 
     def tearDown(self):

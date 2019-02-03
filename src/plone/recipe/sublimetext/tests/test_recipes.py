@@ -526,7 +526,7 @@ class TestRecipe(unittest.TestCase):
         recipe_options.update({
             'anaconda-enabled': '1',
             'anaconda-pep257-enabled': 'True',
-            'anaconda-pep257-ignores': 'M001 K001\nL001'
+            'anaconda-pep257-ignores': 'M001 K001\nL001',
         })
         buildout['sublimetext'] = recipe_options
         recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])

@@ -6,7 +6,7 @@ Changelog
 
 New features:
 
-- `Sublime​Linter linter arguments are possible <http://www.sublimelinter.com/en/latest/linter_settings.html#args>`_ to provide. Currently ``sublimelinter-flake8`` and ``sublimelinter-pylint`` are supported.
+- `Sublime​Linter linter arguments are possible <http://www.sublimelinter.com/en/latest/linter_settings.html#args>`_ to provide linter specific options. Currently ``sublimelinter-flake8`` and ``sublimelinter-pylint`` are supported.
 
 - `New style Sublime​Linter linter settings <http://www.sublimelinter.com/en/stable/settings.html#project-settings>`_ generation has been added. [nazrulworld]
 

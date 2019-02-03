@@ -162,6 +162,34 @@ class Recipe:
             ('yes', 'true', 'on', '1', 'sure')
         options['anaconda-validate-imports'] = self.options['anaconda-validate-imports'].lower() in\
             ('yes', 'true', 'on', '1', 'sure')
+        options['anaconda-pep257-enabled'] = self.options['anaconda-pep257-enabled'].lower() in\
+            ('yes', 'true', 'on', '1', 'sure')
+
+        if 'anaconda-pep8-ignores' in self.options:
+            ignores = list()
+            for ignore_line in self.options['anaconda-pep8-ignores'].splitlines():
+                if not ignore_line or (ignore_line and not ignore_line.strip()):
+                    continue
+
+                for ignore in ignore_line.split(' '):
+                    if not ignore or (ignore and not ignore.strip()):
+                        continue
+                    ignores.append(ignore)
+
+            options['anaconda-pep8-ignores'] = ignores
+
+        if 'anaconda-pep257-ignores' in self.options:
+            ignores = list()
+            for ignore_line in self.options['anaconda-pep257-ignores'].splitlines():
+                if not ignore_line or (ignore_line and not ignore_line.strip()):
+                    continue
+
+                for ignore in ignore_line.split(' '):
+                    if not ignore or (ignore and not ignore.strip()):
+                        continue
+                    ignores.append(ignore)
+
+            options['anaconda-pep257-ignores'] = ignores
 
         return options
 
@@ -235,6 +263,8 @@ class Recipe:
         self.options.setdefault('anaconda-pylint-enabled', 'False')
         self.options.setdefault('anaconda-validate-imports', 'True')
         self.options.setdefault('anaconda-pep8-ignores', '')
+        self.options.setdefault('anaconda-pep257-enabled', 'False')
+        self.options.setdefault('anaconda-pep257-ignores', '')
 
     def _prepare_settings(self, eggs_locations, develop_eggs_locations):
         """ """
@@ -296,12 +326,18 @@ class Recipe:
             'validate_imports': options['anaconda-validate-imports'],
             'disable_anaconda_completion': not options['anaconda-completion-enabled'],
             'anaconda_linting': options['anaconda-linting-enabled'],
+            'pep257': options['anaconda-pep257-enabled'],
             'use_pylint': options['anaconda-pylint-enabled'],
             'extra_paths': eggs_locations,
         })
         if options['anaconda-pep8-ignores']:
             settings['settings'].update({
-                'pep8_ignore': options['anaconda-pep8-ignores'].split(),
+                'pep8_ignore': options['anaconda-pep8-ignores'],
+            })
+
+        if options['anaconda-pep257-ignores']:
+            settings['settings'].update({
+                'pep257_ignore': options['anaconda-pep257-ignores'],
             })
 
     def _prepare_sublinter_settings(self, settings, default_settings, eggs_locations, options):

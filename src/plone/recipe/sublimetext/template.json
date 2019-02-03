@@ -21,7 +21,7 @@
             "use_pylint": false,
             "validate_imports": false,
             "extra_paths": [],
-            "pep8_ignore": []
+            "pep257": false
         }
     }
 

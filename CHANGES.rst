@@ -10,6 +10,8 @@ New features:
 
 - `New style Sublime​Linter linter settings <http://www.sublimelinter.com/en/stable/settings.html#project-settings>`_ generation has been added. [nazrulworld]
 
+- More options (``anaconda-pep257-enabled``, ``anaconda-pep257-ignores``) added for Anaconda settings.
+
 
 1.2.0 (2018-03-05)
 ------------------

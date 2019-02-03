@@ -216,19 +216,19 @@ anaconda-pep8-ignores
 
     If you want ignore some pep8 checklist (i.e N802 is for pep8 naming). Each ignore should be separated by ``space`` and/or ``newline``.
 
-anaconda-pep257-ignores
-    Required: No
-
-    Default: ''
-
-    If you want ignore some pep8 checklist (i.e N802 is for pep8 naming). Each ignore should be separated by ``space`` and/or ``newline``.
-
 anaconda-pep257-enabled
     Required: No
 
     Default: False
 
     Indicates whether you want to active ``pep257`` checklist by anaconda.
+
+anaconda-pep257-ignores
+    Required: No
+
+    Default: ''
+
+    If you want ignore some pep8 checklist (i.e N802 is for pep8 naming). Each ignore should be separated by ``space`` and/or ``newline``.
 
 ignore-develop
     Required: No

@@ -517,6 +517,30 @@ class TestRecipe(unittest.TestCase):
             1,
             len(generated_settings['settings']['SublimeLinter.linters.pylint.args']))
 
+    def test_anaconda_pep257(self):
+        """ """
+        from ..recipes import Recipe
+
+        buildout = self.buildout
+        recipe_options = self.recipe_options.copy()
+        recipe_options.update({
+            'anaconda-enabled': '1',
+            'anaconda-pep257-enabled': 'True',
+            'anaconda-pep257-ignores': 'M001 K001\nL001'
+        })
+        buildout['sublimetext'] = recipe_options
+        recipe = Recipe(buildout, 'sublimetext', buildout['sublimetext'])
+        recipe.install()
+
+        generated_settings = json.loads(
+            read(os.path.join(self.location, recipe_options['project-name'] + '.sublime-project')),
+        )
+        # should be three
+        self.assertTrue(generated_settings['settings']['pep257'])
+        self.assertEqual(
+            3,
+            len(generated_settings['settings']['pep257_ignore']))
+
     def tearDown(self):
         os.chdir(self.here)
         rmtree.rmtree(self.location)

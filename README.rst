@@ -165,11 +165,11 @@ sublimelinter-flake8-args
     Default: ''
 
     It is possible to `provide arguments (options) <http://flake8.pycqa.org/en/latest/user/options.html#full-listing-of-options-and-their-descriptions>`_ for ``flake8`` executable project specific.
-    You have to follow a simple format to provide `multiple arguments aka <http://www.sublimelinter.com/en/stable/linter_settings.html#args>`_ flake8 options thanks to buildout for making our life easy.Format ``{option name}={option value(optional if the arg boolen type)}`` ``max-line-length=90``, it is remarkable that ``--`` prefix is not required, you can provide multiple arguments separated by ``space`` and/or ``newline``
+    You have to follow a simple format to provide `multiple arguments aka <http://www.sublimelinter.com/en/stable/linter_settings.html#args>`_ flake8 options thanks to buildout for making our life easy. Format ``{option name}={option value(optional if the arg boolen type)}`` ``max-line-length=90``, it is remarkable that ``--`` prefix is not required, you can provide multiple arguments separated by ``space`` and/or ``newline``
 
-    1. sublimelinter-flake8-args = max-line-length=90  show-source
+    1. sublimelinter-flake8-args = max-line-length=90  --show-source
 
-    2. sublimelinter-flake8-args = max-line-length=90 show-source
+    2. sublimelinter-flake8-args = max-line-length=90  --show-source
                                 output-file=path_to_file
 
 
